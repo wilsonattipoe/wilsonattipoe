@@ -12,15 +12,15 @@ include("./include/header.php");
         </div>
         <div class="row g-4">
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <h5>Get In Touch</h5>
-                <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos</p>
+            <h5>Contact Us</h5>
+                <p class="mb-4">Feel free to reach out to us anytime. We are here to assist you with any inquiries or concerns you may have.</p>
                 <div class="d-flex align-items-center mb-4">
                     <div class="d-flex align-items-center justify-content-center flex-shrink-0 bg-primary" style="width: 50px; height: 50px;">
                         <i class="fa fa-map-marker-alt text-white"></i>
                     </div>
                     <div class="ms-3">
                         <h5 class="text-primary">Office</h5>
-                        <p class="mb-0">123 Street, New York, USA</p>
+                        <p class="mb-0">123 Street, Ghana, Accra</p>
                     </div>
                 </div>
                 <div class="d-flex align-items-center mb-4">
@@ -29,7 +29,10 @@ include("./include/header.php");
                     </div>
                     <div class="ms-3">
                         <h5 class="text-primary">Mobile</h5>
-                        <p class="mb-0">+012 345 67890</p>
+                        <p class="mb-0">0598751009</p>
+                        <p class="mb-0">059690 457</p>
+                        <p class="mb-0">0201063249</p>
+                        <p class="mb-0">0545804786</p>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
@@ -38,12 +41,12 @@ include("./include/header.php");
                     </div>
                     <div class="ms-3">
                         <h5 class="text-primary">Email</h5>
-                        <p class="mb-0">info@example.com</p>
+                        <p class="mb-0">traveltour391@gmail.com</p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div id="map" class="leaflet-map position-relative rounded w-100 h-100" style="min-height: 300px;"></div>
+                <div id="map" class="leafconst-map position-relative rounded w-100 h-100" style="min-height: 300px;"></div>
             </div>
             <div class="col-lg-4 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
                 <form>
@@ -87,12 +90,16 @@ include("./include/header.php");
 include("./scripts/scriptsLinks.php");
 include("./include/footer.php");
 ?>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Include Leaflet CSS and JavaScript -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Include Leafconst CSS and JavaScript -->
+<link rel="stylesheet" href="https://unpkg.com/leafconst/dist/leafconst.css" />
+<script src="https://unpkg.com/leafconst/dist/leafconst.js"></script>
 
-<!-- Leaflet Map Script -->
+<!-- Leafconst Map Script -->
 <script>
     // Initialize the map
     var map = L.map('map').setView([6.609226, 0.481177], 15);
@@ -116,4 +123,73 @@ include("./include/footer.php");
         L.marker(marker.coords).addTo(map)
             .bindPopup(marker.title);
     });
+</script>
+
+<script>
+$(document).ready(function() {
+    $("form").on("submit", function(event) {
+        event.preventDefault();
+
+        const name = $("#name").val();
+        const email = $("#email").val();
+        const subject = $("#subject").val();
+        const message = $("#message").val();
+
+        if (!name) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please fill out your name before submitting!'
+            });
+            return;
+        } else if (!email) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter your email!'
+            });
+            return;
+        } else if (!subject) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter your subject!'
+            });
+            return;
+        } else if (!message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter your message!'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: './contact_submit.php', 
+            type: 'POST',
+            data: {
+                name: name,
+                email: email,
+                subject: subject,
+                message: message
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Message Sent',
+                    text: response
+                });
+                $("form")[0].reset(); // Clear the form
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was an error sending your message. Please try again later.'
+                });
+            }
+        });
+    });
+});
 </script>

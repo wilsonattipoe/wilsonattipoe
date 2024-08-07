@@ -32,8 +32,8 @@ if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
     $username = ucwords($_SESSION['Username']);
     $userID = $_SESSION['ClientUserID'];
 } else {
-    displayMessage('Error', 'Session not set.', 'error', '/login.php');
-    header("Location: /login.php");
+    displayMessage('Error', 'Session not set.', 'error', '/logout.php');
+    header("Location: /logout.php");
     exit();
 }
 
@@ -128,7 +128,8 @@ if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
                         </a>
                         <a class="dropdown-item d-flex align-items-center" href="#">
                             <div class="dropdown-list-image mr-3">
-                                <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60" alt="...">
+                            <img class="rounded-circle" src="Assests/img/undraw_profile_1.svg"
+                            alt="...">
                                 <div class="status-indicator bg-success"></div>
                             </div>
                             <div>
@@ -143,46 +144,28 @@ if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
 
                 <div class="topbar-divider d-none d-sm-block"></div>
 
-                <!-- Nav Item - User Information -->
-                <li class="nav-item dropdown no-arrow" id="profile_details">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <!-- Nav Item - User Information -->
+                                <li class="nav-item dropdown no-arrow" id="profile_details">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0;">
+                                <!-- username -->
+                                <input type="text" readonly disabled id="profile_name" value="<?php echo $username ?>" class="form-control-plaintext" style="margin-left: 10px; margin-right: 5px; margin: 0 10px 0 0;">
+                                <!-- profile picture -->
+                                <img src="/img/10.jpg" alt="Profile Picture" class="img-profile rounded-circle" style="width: 40px; height: 40px;">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="/Profile/profile.php">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" onclick="openLogout()">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
 
-                        <!-- username -->
-                        <input type="text" readonly disabled id="profile_name" value="<?php echo $username ?>" class="form-control-plaintext" style="margin-left:10%;">
-                        <!-- username -->
-                        <?php
-                        // Fetch the user's profile picture file path from the database
-                        $imageQuery = "SELECT `ImageURL` FROM `ClientUserImages` WHERE `ClientUserID` = '$userID'";
-                        $imageResult = mysqli_query($conn, $imageQuery);
-
-
-                        if (mysqli_num_rows($imageResult) > 0) {
-                            $imageData = mysqli_fetch_assoc($imageResult);
-                            $imagePath = $imageData['data'];
-                            // Display the user's profile picture
-                            echo '<img src="' . $imagePath . '" alt="No Profile Found" class="img-profile rounded-circle" />';
-                        } else {
-                            // If the user doesn't have a profile picture, you can display a default image
-
-                            echo '<img src="" alt="No Profile Found" style="vertical-align: middle; margin-right:30%;  height=1px; width=1px" />';
-                        }
-                        ?>
-                    </a>
-
-                    <!-- Dropdown - User Information -->
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="/Profile/profile.php">
-                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Profile
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="openLogout()">
-                            <i class=" fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Logout
-                        </a>
-                    </div>
-                </li>
 
             </ul>
 
@@ -195,7 +178,7 @@ if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
                 <div class="card-body">
                     <h5 class="card-title">Are you sure you want to Logout?</h5>
                     <form>
-                        <a href="/login.php" class="btn btn-danger ml-4" id="log">Logout</a>
+                        <a href="/logout.php" class="btn btn-danger ml-4" id="log">Logout</a>
                         <button onclick="closeLogout()" class="btn btn-secondary ml-4" id="log">Cancel</button>
                     </form>
                 </div>

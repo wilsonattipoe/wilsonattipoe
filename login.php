@@ -1,9 +1,7 @@
 <?php
+session_start();
 include('include/header.php');
 ?>
-
-
-
 
 
 
@@ -21,7 +19,7 @@ include('include/header.php');
                         <!-- Nested Row within Card Body -->
                         <div class="row">
                             <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                                <img src="./img/login.jpg" style="height: 100%; width:100%; ">
+                                <img src="./img/login.jpg" style="height: 100%; width:100%;">
                             </div>
                             <div class="col-lg-6">
                                 <div class="p-5">

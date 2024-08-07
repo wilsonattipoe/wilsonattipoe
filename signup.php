@@ -26,13 +26,13 @@ include('include/header.php');
                                     <div class="user">
                                         <div id="signup">
                                             <div class="form-group" style="margin-bottom: 20px;">
-                                                <input type="text" class="form-control form-control-user" id="fullName" placeholder="Full Name">
+                                                <input type="text" class="form-control form-control-user" id="fullName" placeholder="Enter firstname">
                                             </div>
                                             <div class="form-group" style="margin-bottom: 20px;">
-                                                <input type="text" class="form-control form-control-user" id="userName" placeholder="ser Name">
+                                                <input type="text" class="form-control form-control-user" id="userName" placeholder="Enter lastname">
                                             </div>
                                             <div class="form-group" style="margin-bottom: 20px;">
-                                                <input type="email" class="form-control form-control-user" id="signupEmail" placeholder="Email Address">
+                                                <input type="email" class="form-control form-control-user" id="signupEmail" placeholder="Email address">
                                             </div>
                                             <div class="form-group" style="margin-bottom: 20px;">
                                                 <input type="password" class="form-control form-control-user" id="signupPassword" placeholder="Password">

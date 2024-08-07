@@ -5,9 +5,9 @@ include('include/navbar.php');
 
 // Dummy data for demonstration (replace with actual database queries)
 $bookings = [
-    ['booking_id' => 1, 'user_id' => 101, 'tour_id' => 201, 'amount' => 150.00, 'booking_date' => '2024-06-27', 'status' => 'Active'],
-    ['booking_id' => 2, 'user_id' => 102, 'tour_id' => 202, 'amount' => 200.00, 'booking_date' => '2024-06-28', 'status' => 'Active'],
-    ['booking_id' => 3, 'user_id' => 103, 'tour_id' => 203, 'amount' => 250.00, 'booking_date' => '2024-06-29', 'status' => 'Active'],
+    ['booking_id' => 1, 'user_id' => 'john kwame', 'tour_id' => 'Htu campus', 'amount' => 150.00, 'booking_date' => '2024-06-27', 'status' => 'Active'],
+    ['booking_id' => 2, 'user_id' => 'Ama kwamen', 'tour_id' => 'Accra', 'amount' => 200.00, 'booking_date' => '2024-06-28', 'status' => 'Active'],
+    ['booking_id' => 3, 'user_id' => 'Tourbook', 'tour_id' => 'Nogogkpo', 'amount' => 250.00, 'booking_date' => '2024-06-29', 'status' => 'Active'],
 ];
 
 ?>
@@ -29,8 +29,8 @@ $bookings = [
                 <table class="table table-bordered table-sm" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>User ID</th>
-                            <th>Tour ID</th>
+                            <th>Clientname</th>
+                            <th>Tourname</th>
                             <th>Amount ($)</th>
                             <th>Booking Date</th>
                             <th>Status</th>

@@ -1,8 +1,25 @@
 <?php
 include('include/header.php');
 include('include/navbar.php');
-?>
 
+// this is our database connection here
+include('../Admin/Database/connect.php'); 
+
+// Fetch prices from the database
+$query = 
+"SELECT 
+    country.country_id, 
+    country.country_name, 
+    country.continent, 
+    countryAmount.countryamount 
+FROM 
+     country
+JOIN 
+    countryAmount 
+ON 
+    country.country_id = countryAmount.country_id;";
+$result = $conn->query($query);
+?>
 
 
 
@@ -17,7 +34,7 @@ include('include/navbar.php');
                     <h2 style="background-color:#32012F; color:white;">Add a Tour</h2>
                 </div>
                 <div class="card-body">
-                    <form id="tourForm" action="/submit-tour" method="POST" enctype="multipart/form-data">
+                    <form id="tourForm" action="./add_tour.php" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="tourImage">Tour Image:</label>
                             <div class="d-flex justify-content-between align-items-center">
@@ -32,11 +49,10 @@ include('include/navbar.php');
                                 <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
-                        
                         <div class="form-group">
                             <label for="tourDuration">Duration (days):</label>
                             <div class="d-flex justify-content-between align-items-center">
-                                <input type="number" class="form-control flex-grow-1" id="tourduration" name="tourDuration" required>
+                                <input type="number" class="form-control flex-grow-1" id="tourDuration" name="tourDuration" required>
                                 <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
@@ -48,12 +64,19 @@ include('include/navbar.php');
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="tourPrice">Price ($):</label>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <input type="number" class="form-control flex-grow-1" id="tourPrice" name="tourPrice" required>
-                                <button type="button" class="btn btn-outline-primary ml-2">Update</button>
-                            </div>
+                        <label for="tourPrice">Country and Price:</label>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <select class="form-control flex-grow-1" id="tourPrice" name="tourPrice" required>
+                                <?php while($row = $result->fetch_assoc()): ?>
+                                    <option value="<?php echo $row['countryamount']; ?>">
+                                        <?php echo $row['country_name'] . ' ($' . $row['countryamount'] . ')'; ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                         </div>
+                    </div>
+
                         <div class="form-group">
                             <label for="tourDescription">Description:</label>
                             <div class="d-flex justify-content-between align-items-center">
@@ -71,23 +94,44 @@ include('include/navbar.php');
 
 <script>
     document.getElementById('tourForm').addEventListener('submit', function(event) {
-    event.preventDefault(); 
+        event.preventDefault();
 
-    var formData = new FormData(this);
+        var formData = new FormData(this);
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', './add_tour.php', true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            alert('Tour added successfully');
-            document.getElementById('tourForm').reset(); 
-        } else {
-            alert('Error: ' + xhr.status);
-        }
-    };
-    xhr.send(formData);
-});
-
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', './add_tour.php', true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    }).then(function() {
+                        window.location = "../Admin/Addtour.php"; 
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    }).then(function() {
+                        window.location = "../Admin/Addtour.php"; 
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error: ' + xhr.status
+                }).then(function() {
+                    window.location = "../Admin/Addtour.php"; 
+                });
+            }
+        };
+        xhr.send(formData);
+    });
 </script>
 
 <?php

@@ -3,7 +3,6 @@ ob_start();
 session_start();
 include('./Database/connect.php');
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST["userName"]);
     $email = trim($_POST["email"]);
@@ -20,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 mysqli_stmt_bind_param($stmt, "s", $email);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_store_result($stmt);
-                $numRows = mysqli_stmt_num_rows($stmt);
+                $numRowsEmail = mysqli_stmt_num_rows($stmt);
 
-                if ($numRows > 0) {
+                if ($numRowsEmail > 0) {
                     $response = [
                         'status' => 'ok',
                         'success' => false,
@@ -31,27 +30,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 } else {
                     mysqli_stmt_close($stmt);
 
-                    // Insert the new user
-                    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-                    $insertUserQuery = "INSERT INTO `ClientUsers` (`Username`, `Password`, `FullName`, `Email`) VALUES (?, ?, ?, ?)";
-                    $stmt = mysqli_prepare($conn, $insertUserQuery);
+                    // Check if username already exists
+                    $checkUsernameQuery = "SELECT `ClientUserID` FROM `ClientUsers` WHERE `Username`=?";
+                    $stmt = mysqli_prepare($conn, $checkUsernameQuery);
 
                     if ($stmt) {
-                        mysqli_stmt_bind_param($stmt, "ssss", $username, $hashedPassword, $fullName, $email);
-                        if (mysqli_stmt_execute($stmt)) {
-                            $response = [
-                                'status' => 'ok',
-                                'success' => true,
-                                'message' => 'User registered successfully'
-                            ];
-                        } else {
+                        mysqli_stmt_bind_param($stmt, "s", $username);
+                        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_store_result($stmt);
+                        $numRowsUsername = mysqli_stmt_num_rows($stmt);
+
+                        if ($numRowsUsername > 0) {
                             $response = [
                                 'status' => 'ok',
                                 'success' => false,
-                                'message' => 'Error registering user'
+                                'message' => 'Username already taken'
                             ];
+                        } else {
+                            mysqli_stmt_close($stmt);
+
+                            // Insert the new user with RoleID set to 3
+                            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+                            $insertUserQuery = "INSERT INTO `ClientUsers` (`Username`, `Password`, `FullName`, `Email`, `RoleID`) VALUES (?, ?, ?, ?, 3)";
+                            $stmt = mysqli_prepare($conn, $insertUserQuery);
+
+                            if ($stmt) {
+                                mysqli_stmt_bind_param($stmt, "ssss", $username, $hashedPassword, $fullName, $email);
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $response = [
+                                        'status' => 'ok',
+                                        'success' => true,
+                                        'message' => 'User registered successfully',
+                                        'redirect' => '/login.php',
+                                    ];
+                                } else {
+                                    $response = [
+                                        'status' => 'ok',
+                                        'success' => false,
+                                        'message' => 'Error registering user'
+                                    ];
+                                }
+                                mysqli_stmt_close($stmt);
+                            } else {
+                                $response = [
+                                    'status' => 'ok',
+                                    'success' => false,
+                                    'message' => 'Database query error'
+                                ];
+                            }
                         }
-                        mysqli_stmt_close($stmt);
                     } else {
                         $response = [
                             'status' => 'ok',

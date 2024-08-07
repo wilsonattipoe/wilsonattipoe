@@ -4,13 +4,12 @@ session_start();
 // Include database configuration
 include('../Admin/Database/connect.php');
 
-
 // Retrieve form data
 $tourName = $_POST['tourName'];
-$tourDuration = $_POST['tourduration'];
 $tourPersons = $_POST['tourPersons'];
-$tourPrice = $_POST['tourPrice'];
+$tourPrice = $_POST['tourPrice']; // This is the selected price from the dropdown
 $tourDescription = $_POST['tourDescription'];
+$tourDuration = $_POST['tourDuration']; 
 
 // Handle file upload
 $tourImage = $_FILES['tourImage']['name'];
@@ -18,22 +17,32 @@ $tourImageTmp = $_FILES['tourImage']['tmp_name'];
 $uploadDir = '../uploads/';
 $uploadFile = $uploadDir . basename($tourImage);
 
+$response = array(); 
+
 if (move_uploaded_file($tourImageTmp, $uploadFile)) {
     // Prepare and execute the SQL statement
-    $stmt = $conn->prepare("INSERT INTO tours (TourName, TourDuration, NumberOfPersons, Price, Description, Image) 
-                            VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("siidss", $tourName, $tourDuration, $tourPersons, $tourPrice, $tourDescription, $tourImage);
+    $stmt = $conn->prepare("INSERT INTO tours (TourTypeID, TourName, tourdescription, Price, tourimages, numberperson, TourDuration) VALUES (?, ?, ?, ?, ?, ?, ?)");
+      
+    // binding the sql query parameters to avoid sql injection here
+    $stmt->bind_param("issdsss", $tourTypeID, $tourName, $tourDescription, $tourPrice, $tourImage, $tourPersons, $tourDuration);
 
     if ($stmt->execute()) {
-        echo "New tour added successfully";
+        $response['success'] = true;
+        $response['message'] = "New tour added successfully";
     } else {
-        echo "Error: " . $stmt->error;
+        $response['success'] = false;
+        $response['message'] = "Failed to add new tour: " . $stmt->error;
     }
 
     $stmt->close();
 } else {
-    echo "Failed to upload image.";
+    $response['success'] = false;
+    $response['message'] = "Failed to upload image.";
 }
 
 $conn->close();
+
+// Send JSON response
+header('Content-Type: application/json');
+echo json_encode($response);
 ?>

@@ -1,5 +1,5 @@
 <?php
-include("./include/BookNavbar.php");
+include("./include/navbar.php");
 include("./include/header.php");
 ?>
 

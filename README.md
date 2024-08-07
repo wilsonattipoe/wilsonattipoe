@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!-- PROJECT STRUCTURE -->
 
 
@@ -56,17 +55,3 @@
 
 
 -->
-=======
-- 👋 Hi, I’m @wilsonattipoe
-- 👀 I’m interested in ...
-- 🌱 I’m currently learning ...
-- 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
-
-<!---
-wilsonattipoe/wilsonattipoe is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
->>>>>>> edb19f07c60c3db37b10628ba8d5ae0bc76d1de1

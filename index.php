@@ -1,11 +1,31 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 include("./include/navbar.php");
 include("./include/header.php");
-
+include("./Database/connect.php");
 
 $isLoggedIn = isset($_SESSION['ClientUserID']);
+
+// Fetch tour data from the add_tour.php
+$sql = "SELECT TourName, tourdescription, Price, tourimages, numberperson, TourDuration FROM tours";
+$result = $conn->query($sql); 
+
+// This function is fetching all details from the tour table that admin currently added to the front end
+if ($result->num_rows > 0) {
+    $tours = $result->fetch_all(MYSQLI_ASSOC);
+} else {
+    $tours = [];
+}
+
+// Close the connection after the above function is initiated 
+$conn->close();
 ?>
+
+
+
+
 
 
 
@@ -221,8 +241,6 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
     <!-- Destination Start -->
 
 
-
-
 <!-- Package Start -->
 <div class="container-xxl py-5">
     <div class="container">
@@ -231,181 +249,40 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
             <h1 class="mb-5">Awesome Packages</h1>
         </div>
         <div class="row g-4 justify-content-center">
-
-            <!-- Start Eastern Region Card -->
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="package-item">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="img/kk.webp" alt="Eastern Region Landscape">
-                    </div>
-                    <div class="d-flex border-bottom">
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt text-primary me-2"></i>Explore the Eastern Region</small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>3 Days Adventure</small>
-                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>Suitable for 2 People</small>
-                    </div>
-                    <div class="text-center p-4">
-                        <h3 class="mb-0">$23.00</h3>
-                        <div class="mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
+            <?php foreach ($tours as $tour): ?>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="package-item">
+                        <div class="overflow-hidden">
+                            <img class="img-fluid" src="../uploads/<?php echo htmlspecialchars($tour['tourimages']); ?>" alt="<?php echo htmlspecialchars($tour['TourName']); ?>">
                         </div>
-                        <p>Embark on an unforgettable journey through the breathtaking landscapes of the Eastern Region. Enjoy scenic views, rich cultural experiences, and luxurious accommodations in this exclusive 3-day package designed for couples or friends.</p>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
+                        <div class="d-flex border-bottom">
+                            <small class="flex-fill text-center border-end py-2">
+                                <i class="fa fa-map-marker-alt text-primary me-2"></i><?php echo htmlspecialchars($tour['TourName']); ?>
+                            </small>
+                            <small class="flex-fill text-center border-end py-2">
+                                <i class="fa fa-calendar-alt text-primary me-2"></i><?php echo htmlspecialchars($tour['TourDuration']); ?> Days
+                            </small>
+                            <small class="flex-fill text-center py-2">
+                                <i class="fa fa-user text-primary me-2"></i><?php echo htmlspecialchars($tour['numberperson']); ?> Person
+                            </small>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Eastern Region Card -->
-
-            <!-- Start Upper East Region Card -->
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="package-item">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="img/upper.jpg" alt="">
-                    </div>
-                    <div class="d-flex border-bottom">
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt text-primary me-2"></i>Upper East Region</small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>3 days</small>
-                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>2 Person</small>
-                    </div>
-                    <div class="text-center p-4">
-                        <h3 class="mb-0">$20.00</h3>
-                        <div class="mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <p>Experience the charm of the Eastern Region with our 3-day expedition. From lush landscapes to cultural highlights, this package is tailored for couples seeking an intimate and enriching escape. Explore hidden gems and enjoy premium amenities throughout your journey.</p>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
+                        <div class="text-center p-4">
+                            <h3 class="mb-0">$<?php echo number_format($tour['Price'], 2); ?></h3>
+                            <div class="mb-3">
+                                <small class="fa fa-star text-primary"></small>
+                                <small class="fa fa-star text-primary"></small>
+                                <small class="fa fa-star text-primary"></small>
+                                <small class="fa fa-star text-primary"></small>
+                                <small class="fa fa-star text-primary"></small>
+                            </div>
+                            <p><?php echo htmlspecialchars($tour['tourdescription']); ?></p>
+                            <div class="d-flex justify-content-center mb-2">
+                                <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- End Upper East Region Card -->
-
-            <!-- Start Volta Region Card -->
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="package-item">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="img/ho1.jpg" alt="Volta Region Landscape">
-                    </div>
-                    <div class="d-flex border-bottom">
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt text-primary me-2"></i>Volta Region Adventure</small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>3 Days</small>
-                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>Group of 3</small>
-                    </div>
-                    <div class="text-center p-4">
-                        <h3 class="mb-0">$15.00</h3>
-                        <div class="mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <p>Immerse yourself in the natural beauty of the Volta Region. This 3-day adventure is perfect for groups of friends or family looking to explore stunning landscapes and experience local culture.</p>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Volta Region Card -->
-
-            <!-- Start Western Region Card -->
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="package-item">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="img/west.webp" alt="Western Region Exploration">
-                    </div>
-                    <div class="d-flex border-bottom">
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt text-primary me-2"></i>Western Region Escape</small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>4 Days</small>
-                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>For 2 Guests</small>
-                    </div>
-                    <div class="text-center p-4">
-                        <h3 class="mb-0">$25.00</h3>
-                        <div class="mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <p>Discover the hidden gems of the Western Region with this 4-day package designed for couples. Enjoy breathtaking views and relaxing accommodations in an enchanting setting.</p>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Western Region Card -->
-
-            <!-- Start Oti Region Card -->
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="package-item">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="img/oti.jpg" alt="Oti Region Getaway">
-                    </div>
-                    <div class="d-flex border-bottom">
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt text-primary me-2"></i>Oti Region Getaway</small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>3 Days</small>
-                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>Suitable for 2</small>
-                    </div>
-                    <div class="text-center p-4">
-                        <h3 class="mb-0">$22.00</h3>
-                        <div class="mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <p>Enjoy a memorable 3-day escape to the Oti Region. This package offers a mix of adventure and relaxation, perfect for couples or friends looking for a unique getaway experience.</p>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Oti Region Card -->
-
-            <!-- Start Bono Region Card -->
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="package-item">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="img/bon.jpg" alt="Bono Region Experience">
-                    </div>
-                    <div class="d-flex border-bottom">
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt text-primary me-2"></i>Bono Region Experience</small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>3 Days</small>
-                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>For 2 People</small>
-                    </div>
-                    <div class="text-center p-4">
-                        <h3 class="mb-0">$24.00</h3>
-                        <div class="mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <p>Immerse yourself in the vibrant culture and stunning landscapes of the Bono Region. This 3-day package is designed for couples who seek both relaxation and adventure in a picturesque setting.</p>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Bono Region Card -->
-
+            <?php endforeach; ?>
         </div>
     </div>
 </div>
@@ -419,7 +296,7 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="loginPromptModalLabel">Please Log In</h5>
+                <h5 class="modal-title" id="loginPromptModalLabel">Hello, Guest, Please Log In</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -536,15 +413,15 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
                                 <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
                             </div>
                             <div class="text-center p-4">
-                                <h5 class="mb-0">Wisdome small</h5>
-                                <small>Beans CEO</small>
+                                <h5 class="mb-0">Mr. Wisdom</h5>
+                                <small>Technical Director</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
                         <div class="team-item">
                             <div class="overflow-hidden">
-                                <img class="img-fluid" src="img/team-4.jpg" alt="">
+                                <img class="img-fluid" src="img/speny.jpg" alt="">
                             </div>
                             <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
                                 <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
@@ -552,8 +429,8 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
                                 <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
                             </div>
                             <div class="text-center p-4">
-                                <h5 class="mb-0">Maron</h5>
-                                <small>Sport Gen</small>
+                                <h5 class="mb-0">Miss Spendylove</h5>
+                                <small>Operational Manager</small>
                             </div>
                         </div>
                     </div>
@@ -647,14 +524,21 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
     include("./include/footer.php");
     ?>
 
+
+
+
+
+
 <script>
 function checkLogin(bookingUrl) {
-    // Get the session status from the button's data attribute
+    // We Get the session status from the button's data attribute
     const isLoggedIn = event.target.getAttribute('data-session') === 'true';
 
     if (!isLoggedIn) {
         // Prevent default link action
         event.preventDefault();
+
+
         // Show the login prompt modal
         $('#loginPromptModal').modal('show');
     } else {

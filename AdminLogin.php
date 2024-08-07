@@ -1,10 +1,19 @@
-<?php include("./include/header.php"); ?>
+<?php 
+include("./include/header.php"); 
+
+
+
+
+
+
+
+?>
 
 <div class="login-container">
   <div class="contents">
     <div class="form-block">
       <div class="text-center mb-5">
-        <h5><strong> LOGIN</strong></h5>
+        <h5><strong>Admin Login</strong></h5>
       </div>
       <div class="login">
         <div class="form-group">
@@ -21,6 +30,10 @@
     </div>
   </div>
 </div>
+
+
+
+
 
 <style>
   .login-container {
@@ -105,7 +118,7 @@
         email: email,
         password: password,
       },
-      url: 'user_login_backend.php',
+      url: './AdminloginBackend.php',
       success: function(data) {
         var response = JSON.parse(data);
         if (response.success) {

@@ -1,7 +1,61 @@
 <?php
 include('include/header.php');
 include('include/navbar.php');
+
+    // Database connection code
+require_once('../Admin/Database/connect.php');
+
+// Count function: Counting the total number of items in the database
+$queries = array(
+    "Total client" => "SELECT COUNT(ClientUserID) AS count FROM clientusers",
+);
+
+
+
+// Execute queries and store counts
+$counts = array();
+foreach ($queries as $label => $query) {
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $counts[$label] = $row["count"];
+    } else {
+        echo "Error executing query: " . $conn->error;
+    }
+}
 ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- /.container-fluid -->
 <style>
@@ -10,20 +64,12 @@ include('include/navbar.php');
     }
  
 </style>
-
-
-
-
-
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 ">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm shadow-sm card-metric-purple">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
-        </a>
     </div>
 
     <!-- Content Row -->
@@ -35,8 +81,9 @@ include('include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center ">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up text-white-100" style="color:white;"></i> +12.07%</span>
+                        <h2><i class="fas fa-users fa-sm text-white-100" style="color: white; "> &nbsp;&nbsp;<?php echo $counts ["Total client"]; ?>
+                        </i></h2>
+                        <span><i class="fa fa-arrow-up" style="color:white;">Client users</i> </span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-users fa-2x text-gray-300 "></i>
@@ -52,8 +99,8 @@ include('include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"  style="color:white;">&nbsp;24,590</i></h2>
+                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;">Revenue income</i> </span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -69,8 +116,8 @@ include('include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;"></i>+12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp;24,590</i></h2>
+                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;">Bookings</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -86,8 +133,8 @@ include('include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp;24,590</i></h2>
+                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;">User Feedbacks</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-comments fa-2x text-gray-300"  style="color:white;"></i>

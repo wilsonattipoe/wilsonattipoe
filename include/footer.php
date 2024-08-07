@@ -1,3 +1,13 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
+include("./Database/connect.php");
+$isLoggedIn = isset($_SESSION['ClientUserID']);
+?>
+
+
 
 <style>
     .payment-icons {
@@ -79,6 +89,9 @@
 </style>
 
 
+
+
+
 <!-- Footer Start -->
 <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
     <div class="container py-5">
@@ -106,13 +119,13 @@
             <div class="col-lg-6 col-md-12">
                 <h4 class="text-white mb-3" style="margin-left: 35%;">Payment Channels</h4>
                 <div class="payment-icons">
-                    <a href=""><img src="/img/VISA-logo.png" alt="Visa"></a>
-                    <a href=""><img src="/img/mastercard.png" alt="MasterCard"></a>
-                    <a href=""><img src="/img/paypal.png" alt="PayPal"></a>
-                    <a href=""><img src="/img/express.png" alt="American Express"></a>
-                    <a href=""><img src="/img/pay.png" alt="Apple Pay"></a>
-                    <a href=""><img src="/img/rupay.png" alt="RuPay"></a>
-                    <a href=""><img src="/img/mtn.jpg" alt="MTN"></a>
+                    <a href="#" class="payment-link"><img src="/img/VISA-logo.png" alt="Visa"></a>
+                    <a href="#" class="payment-link"><img src="/img/mastercard.png" alt="MasterCard"></a>
+                    <a href="#" class="payment-link"><img src="/img/paypal.png" alt="PayPal"></a>
+                    <a href="#" class="payment-link"><img src="/img/express.png" alt="American Express"></a>
+                    <a href="#" class="payment-link"><img src="/img/pay.png" alt="Apple Pay"></a>
+                    <a href="#" class="payment-link"><img src="/img/rupay.png" alt="RuPay"></a>
+                    <a href="#" class="payment-link"><img src="/img/mtn.jpg" alt="MTN"></a>
                 </div>
             </div>
         </div>
@@ -126,8 +139,7 @@
                 <div class="col-md-6 text-center text-md-end">
                     <div class="footer-menu">
                         <a href="/index.php">Home</a>
-                        <a href="#">Cookies</a>
-                        <a href="/contact.php">Help</a>
+                        <a href="/cookies.php">Cookies</a>
                         <a href="/FAQ.php">FAQs</a>
                     </div>
                 </div>
@@ -166,38 +178,61 @@
 </div>
 <!-- Payment Modal End -->
 
+<!-- Login Prompt Modal -->
+<div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel" aria-hidden="true" style="z-index:1050; ">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginPromptModalLabel">Please Log In</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You need to log in before you can access the payment channels. Please log in to your account or create a new account to continue.</p>
+                <a href="/login.php" class="btn btn-primary">Log In</a>
+                <a href="/signup.php" class="btn btn-secondary">Sign Up</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Back to Top -->
 <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-
-
 <script>
-// Get the modal
-var modal = document.getElementById("paymentModal");
+// Get the modals
+var paymentModal = document.getElementById("paymentModal");
+var loginPromptModal = new bootstrap.Modal(document.getElementById('loginPromptModal'));
 
-// Get the <span> element that closes the modal
+// Get the <span> element that closes the payment modal
 var span = document.getElementsByClassName("close")[0];
 
 // Get all payment option links
-var paymentOptions = document.querySelectorAll('.payment-icons a');
+var paymentLinks = document.querySelectorAll('.payment-link');
 
-// Loop through the payment options to add click event listeners
-paymentOptions.forEach(function(option) {
-    option.addEventListener('click', function(event) {
+// Loop through the payment links to add click event listeners
+paymentLinks.forEach(function(link) {
+    link.addEventListener('click', function(event) {
         event.preventDefault();
-        modal.style.display = "block";
+        <?php if ($isLoggedIn): ?>
+            paymentModal.style.display = "block";
+        <?php else: ?>
+            loginPromptModal.show();
+        <?php endif; ?>
     });
 });
 
-// When the user clicks on <span> (x), close the modal
+// When the user clicks on <span> (x), close the payment modal
 span.onclick = function() {
-    modal.style.display = "none";
+    paymentModal.style.display = "none";
 }
 
-// When the user clicks anywhere outside of the modal, close it
+// When the user clicks anywhere outside of the payment modal, close it
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == paymentModal) {
+        paymentModal.style.display = "none";
     }
 }
 </script>
