@@ -1,81 +1,51 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+session_start();
 include('include/header.php');
 include('include/navbar.php');
+// Include database connection
+include('./Database/connect.php');
+
+// Determine user ID from session
+if (isset($_SESSION['AdminUserID'])) {
+    $userId = $_SESSION['AdminUserID'];
+} elseif (isset($_SESSION['ClientUserID'])) {
+    $userId = $_SESSION['ClientUserID'];
+} else {
+    die("User not logged in");
+}
+
+// Fetch the user's profile details based on the user ID
+$userQuery = "SELECT Username, Email FROM " . (isset($_SESSION['AdminUserID']) ? "Adminusers" : "ClientUsers") . " WHERE " . (isset($_SESSION['AdminUserID']) ? "AdminUserID" : "ClientUserID") . " = ?";
+$stmt = $conn->prepare($userQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$stmt->bind_result($username, $email);
+$stmt->fetch();
+$stmt->close();
+
+// Ensure variables are not null
+$username = $username ?? 'Not Available';
+$email = $email ?? 'Not Available';
 ?>
-
-
-
-
-
-
-
-
 
 <div class="container" style="margin-top:80px;" id="profile">
     <div class="row">
         <div class="col-4"></div>
         <div class="col-4 col-md-4">
             <div class="card shadow">
-                <!-- Display user's image -->
-                <?php
-                // Fetch the user's profile picture file path from the database
-                $imageQuery = "SELECT data FROM image WHERE user_id = '$userId'";
-                $imageResult = mysqli_query($conn, $imageQuery);
-
-                if (mysqli_num_rows($imageResult) > 0) {
-                    $imageData = mysqli_fetch_assoc($imageResult);
-                    $imagePath = $imageData['data'];
-
-                    echo '<div class="d-flex justify-content-center align-items-center mt-4">';
-                    if (file_exists($imagePath)) {
-                        echo '<img src="' . $imagePath . '" alt="No Profile Found" class="img rounded-circle" height="150px"  width="150px"/>';
-                    } else {
-                        echo '<img src="images/default_profile.jpg" alt="No Profile Found" class="img rounded-circle" height="150px"  width="150px"/>';
-                    }
-                    echo '</div>';
-                }
-                ?>
                 <div class="card-body" style="justify-content:center;">
-                <div class="text-center">
+                    <div class="text-center">
                         <h1 class="text-center">Profile</h1>
                         <hr>
-                        <?php if (isset($username)) : ?>
-                            <p class="card-text" style="margin-right:158px;">Full Name: <?= $username ?></p>
-                        <?php endif; ?>
-                        <?php if (isset($email)) : ?>
-                            <p class="card-text">Email: <?= hideEmail($email, 10) ?></p>
-                        <?php endif; ?>
-                        <?php if (isset($phone)) : ?>
-                            <p class="card-text" style="margin-right:120px;">Phone: <?= hidePhone($phone, 7) ?></p>
-                        <?php endif; ?>
+                        <!-- Display the user details directly -->
+                        <p class="card-text">Full Name: <?= htmlspecialchars($username) ?></p>
+                        <p class="card-text">Email: <?= htmlspecialchars($email) ?></p>
                     </div>
-
-                    <?php
-                    // Function to hide a portion of the email address
-                    function hideEmail($email, $middleCharsToHide) {
-                        list($username, $domain) = explode('@', $email);
-                        $visibleUsername = $username;
-                        
-                        $hiddenPartLength = min($middleCharsToHide, strlen($username));
-                        $hiddenUsername = str_repeat('*', $hiddenPartLength);
-
-                        return $hiddenUsername . substr($username, $hiddenPartLength) . '@' . $domain;
-                    }
-
-                    // Function to hide a portion of the phone number
-                    function hidePhone($phone) {
-                        $visibleChars = 5;
-                        $hiddenPart = str_repeat('*', strlen($phone) - $visibleChars);
-                        
-                        return substr_replace($phone, $hiddenPart, 0, strlen($phone) - $visibleChars);
-                    }
-                    ?>
                     <br>
                     <div class="text-center">
-                      <a class='btn btn-outline-success text-black' data-toggle="modal" href="#updateprofileModal" onclick="viewData()">Update Profile</a>
+                        <a class='btn btn-outline-success text-black' data-toggle="modal" href="#updateprofileModal">Update Profile</a>
                     </div>
                 </div>
             </div>
@@ -83,48 +53,35 @@ include('include/navbar.php');
     </div>
 </div>
 
-
-
-
-
-<!-- //UPdate Profile -->
-<div class="modal fade " id="updateprofileModal"style="z-index:1100" >
-<div class="modal-dialog" id="cont">
-    <div class=" modal-content" id="cont">
+<!-- Update Profile Modal -->
+<div class="modal fade" id="updateprofileModal" style="z-index:1100">
+    <div class="modal-dialog" id="cont">
+        <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title fs-5">Update Profile</h4>
-               <button type="button" class="close" data-dismiss="modal" aria-hidden="true" >&times;</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body updateuser">
-               
-                    <div class="form-group">
-                        <label>Upload Image:</label>
-                        <input type="file" class="form-control" name="image" id="image">
-                        <input type="submit" value="Save Changes" class="btn btn-outline-success w-20" name="submit" onclick="update_image()" style="margin-top: 5px;">
-                    </div>
-               
-
                 <div class="form-group">
                     <label>Username:</label>
-                    <input type="text" class="form-control" id="username">
-                    <input type="text" class="form-control" hidden id="user_id">
+                    <input type="text" class="form-control" id="username" value="<?= htmlspecialchars($username) ?>">
                 </div>
 
                 <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" class="form-control" id="email">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number:</label>
-                    <input type="text" class="form-control" id="phone">
+                    <input type="email" class="form-control" id="email" value="<?= htmlspecialchars($email) ?>">
                 </div>
 
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter new password (leave empty to keep current)">
+                </div>
             </div>
             <div class="modal-footer" style="display: flex; margin:auto; text-align:center;">
-                <input type="button"  class="btn btn-outline-danger w-20" data-dismiss="modal" value="close">
-                <input type="submit" class="btn btn-outline-success" value="update" onclick="update_user()">
+                <input type="button" class="btn btn-outline-danger w-20" data-dismiss="modal" value="Close">
+                <input type="button" class="btn btn-outline-success" value="Update" onclick="update_user()">
             </div>
-     </div>
+        </div>
     </div>
 </div>
 <br><br>
@@ -132,34 +89,67 @@ include('include/navbar.php');
     #content_1 {
         z-index: 99%;
         width: 500px;
-      overflow: hidden;
-        
+        overflow: hidden;
     }
-    #cont{
+    #cont {
         width: 400px;
     }
-
 </style>
+<script>
+    function update_user() {
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
+        // Prepare data to be sent to the server
+        const data = {
+            username: username,
+            email: email,
+            password: password
+        };
 
+        // Create a new XMLHttpRequest object
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', './ProfileUpdate.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Parse the JSON response
+                const response = JSON.parse(xhr.responseText);
 
-
-
-
-
-
-<?php
-// Close database connection and include footer and script files
-// mysqli_close($connection);
-
-include('include/footer.php');
-include('include/script.php');
-?>
-
-
-
-
-
-
-
-
+                if (response.success) {
+                    // Show success notification
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); 
+                    });
+                } else {
+                    // Show error notification
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } else {
+                // Handle unexpected errors
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to update profile. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        };
+        
+        // Convert data object to query string
+        const queryString = new URLSearchParams(data).toString();
+        xhr.send(queryString);
+    }
+</script>

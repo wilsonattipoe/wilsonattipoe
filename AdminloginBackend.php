@@ -33,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $_SESSION['Username'] = $dbUsername;
                         $_SESSION['RoleID'] = $RoleID;
                         
-
                         switch ($_SESSION['position_id']) {
                             case 1:
                                 // Admin

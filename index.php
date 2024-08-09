@@ -19,14 +19,9 @@ if ($result->num_rows > 0) {
     $tours = [];
 }
 
-// Close the connection after the above function is initiated 
+// Close the connection 
 $conn->close();
 ?>
-
-
-
-
-
 
 
     <!-- About Start -->
