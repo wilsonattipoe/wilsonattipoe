@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             WHERE Request_id = ?";
             
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("ssii", $request_title, $request_tourname, $request_description, $action_id, $request_id);
+        $stmt->bind_param("sssii", $request_title, $request_tourname, $request_description, $action_id, $request_id);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {

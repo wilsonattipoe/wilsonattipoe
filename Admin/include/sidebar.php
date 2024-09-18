@@ -4,10 +4,6 @@
 }
 </style>
 
-
-
-
-
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-32012F sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -82,7 +78,7 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#TourManagement"
                     aria-expanded="true" aria-controls="TourManagement">
                     <i class="fas fa-fw fa-globe"></i>
-                    <span>Tour Management</span>
+                    <span>Add Tour</span>
                 </a>
                 <div id="TourManagement" class="collapse" aria-labelledby="headingUtilities"
                     data-parent="#accordionSidebar">
@@ -93,21 +89,56 @@
                 </div>
             </li>
 
-        <!-- Tourtables -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Tourtables"
-                aria-expanded="true" aria-controls="Tourtables">
-                <i class="fas fa-fw fa-comments"></i>
-                <span>Tourtables</span>
-            </a>
-            <div id="Tourtables" class="collapse" aria-labelledby="headingUtilities"
-                data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Tourtables</h6>
-                    <a class="collapse-item" href="/Admin/Tourtable.php">Tourtables</a>
+            
+            <!-- Tour Management -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#servicesTour"
+                    aria-expanded="true" aria-controls="servicesTour">
+                    <i class="fas fa-fw fa-globe"></i>
+                    <span>Add Services Tour</span>
+                </a>
+                <div id="servicesTour" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Services Tour:</h6>
+                        <a class="collapse-item" href="/Admin/AddservicesTour.php">Add Services Tour</a>
+                    </div>
                 </div>
-            </div>
-        </li>
+            </li>
+
+
+             <!-- Room Management -->
+             <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#RoomManagement"
+                    aria-expanded="true" aria-controls="RoomManagement">
+                    <i class="fas fa-fw fa-globe"></i>
+                    <span>Add Room</span>
+                </a>
+                <div id="RoomManagement" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Room Management:</h6>
+                        <a class="collapse-item" href="/Admin/AddRoom.php">Add Room</a>
+                    </div>
+                </div>
+            </li>
+
+
+            <!-- Tourtables -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Tourtables"
+                    aria-expanded="true" aria-controls="Tourtables">
+                    <i class="fas fa-fw fa-comments"></i>
+                    <span>Tour Tourtables</span>
+                </a>
+                <div id="Tourtables" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Tourtables</h6>
+                        <a class="collapse-item" href="/Admin/Tourtable.php">Tourtables</a>
+                    </div>
+                </div>
+            </li>
 
 
 
@@ -183,29 +214,29 @@
 
 
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+<i class="fas fa-angle-up"></i>
+</a>
 
 
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="/login.php">Logout</a>
-                </div>
-            </div>
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
         </div>
-    </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="/login.php">Logout</a>
+        </div>
+        </div>
+        </div>
+</div>

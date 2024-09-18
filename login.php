@@ -5,9 +5,9 @@ include('include/header.php');
 
 
 
-<body class="bg-gradient-primary">
+<body class="">
 
-    <div class="container">
+<div class="container" style="margin-top:100px;">
 
         <!-- Outer Row -->
         <div class="row justify-content-center">
@@ -113,9 +113,8 @@ include('include/header.php');
         }
     </script>
 
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.3/css/all.css" integrity="your-integrity-code" crossorigin="anonymous" />
 
-    <!-- Include jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.3/css/all.css" integrity="your-integrity-code" crossorigin="anonymous" />
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

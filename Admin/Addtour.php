@@ -2,26 +2,41 @@
 include('include/header.php');
 include('include/navbar.php');
 
-// this is our database connection here
+// Database connection
 include('../Admin/Database/connect.php'); 
 
-// Fetch prices from the database
-$query = 
+// Query for fetching countries and amounts
+$query_countries = 
 "SELECT 
-    country.country_id, 
-    country.country_name, 
-    country.continent, 
-    countryAmount.countryamount 
+    c.`country_name`, 
+    c.`continent`, 
+    ca.`countryamnt`
 FROM 
-     country
+    `countries` c
 JOIN 
-    countryAmount 
+    `countryamount` ca 
 ON 
-    country.country_id = countryAmount.country_id;";
-$result = $conn->query($query);
+    c.`countryamount_id` = ca.`country_id`;";
+$result_countries = $conn->query($query_countries);
+
+// Query for fetching tourist sites
+$query_sites = 
+"SELECT 
+    `site_id`, 
+    `site_name`
+FROM 
+    `tourist_sites`;";
+$result_sites = $conn->query($query_sites);
+
+// Query for fetching tour statuses
+$query_tourstatus = 
+"SELECT 
+    `tourstat_id`, 
+    `tourStatus`
+FROM 
+    `tourstatus`;";
+$result_tourstatus = $conn->query($query_tourstatus);
 ?>
-
-
 
 
 
@@ -34,56 +49,87 @@ $result = $conn->query($query);
                     <h2 style="background-color:#32012F; color:white;">Add a Tour</h2>
                 </div>
                 <div class="card-body">
-                    <form id="tourForm" action="./add_tour.php" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
+                    <form id="tourForm"  method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
                             <label for="tourImage">Tour Image:</label>
                             <div class="d-flex justify-content-between align-items-center">
                                 <input type="file" class="form-control-file flex-grow-1" id="tourImage" name="tourImage" accept="image/*" required>
-                                <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="tourName">Tour Name:</label>
                             <div class="d-flex justify-content-between align-items-center">
                                 <input type="text" class="form-control flex-grow-1" id="tourName" name="tourName" required>
-                                <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="tourDuration">Duration (days):</label>
                             <div class="d-flex justify-content-between align-items-center">
                                 <input type="number" class="form-control flex-grow-1" id="tourDuration" name="tourDuration" required>
-                                <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="tourPersons">Number of Persons:</label>
                             <div class="d-flex justify-content-between align-items-center">
                                 <input type="number" class="form-control flex-grow-1" id="tourPersons" name="tourPersons" required>
-                                <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
+
+                        <!-- Dropdown for Country and Price -->
                         <div class="form-group">
-                        <label for="tourPrice">Country and Price:</label>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <select class="form-control flex-grow-1" id="tourPrice" name="tourPrice" required>
-                                <?php while($row = $result->fetch_assoc()): ?>
-                                    <option value="<?php echo $row['countryamount']; ?>">
-                                        <?php echo $row['country_name'] . ' ($' . $row['countryamount'] . ')'; ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                            <button type="button" class="btn btn-outline-primary ml-2">Update</button>
+                            <label for="tourPrice">Country and Price:</label>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <select class="form-control flex-grow-1" id="tourPrice" name="tourPrice" required>
+                                    <option value="" disabled selected>Select a country</option>
+                                    <?php while($row = $result_countries->fetch_assoc()): ?>
+                                        <option value="<?php echo $row['countryamnt']; ?>">
+                                            <?php echo $row['country_name'] . ' ($' . $row['countryamnt'] . ')'; ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </div>
                         </div>
+
+                        <!-- Dropdown for Tourist Site -->
+                        <div class="form-group">
+                            <label for="tourSite">Tourist Site:</label>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <select class="form-control flex-grow-1" id="tourSite" name="tourSite" required>
+                                    <option value="" disabled selected>Select a tourist site</option>
+                                    <?php while($row = $result_sites->fetch_assoc()): ?>
+                                        <option value="<?php echo $row['site_id']; ?>">
+                                            <?php echo $row['site_name']; ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                    <label for="tourstat">Tourist Status:</label>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <select class="form-control flex-grow-1" id="tourstat" name="tourstat" required>
+                            <option value="" disabled selected>Select a tourist status</option>
+                            <?php while ($row = $result_tourstatus->fetch_assoc()): ?>
+                                <option value="<?php echo $row['tourstat_id']; ?>">
+                                    <?php echo htmlspecialchars($row['tourStatus']); ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
                     </div>
+                </div>
+
 
                         <div class="form-group">
                             <label for="tourDescription">Description:</label>
                             <div class="d-flex justify-content-between align-items-center">
                                 <textarea class="form-control flex-grow-1" id="tourDescription" name="tourDescription" rows="4" required></textarea>
-                                <button type="button" class="btn btn-outline-primary ml-2">Update</button>
                             </div>
                         </div>
+
                         <button type="submit" class="btn btn-outline-primary btn-block">Add Tour</button>
                     </form>
                 </div>
@@ -91,7 +137,6 @@ $result = $conn->query($query);
         </div>
     </div>
 </div>
-
 <script>
     document.getElementById('tourForm').addEventListener('submit', function(event) {
         event.preventDefault();

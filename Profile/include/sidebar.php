@@ -44,20 +44,17 @@
 
   <!-- Booking Handling -->
   <li class="nav-item">
-    <a class="nav-link collapsed" href="/Profile/Booking.php" aria-expanded="true" aria-controls="collapseTwo">
+    <a class="nav-link collapsed" href="/Profile/BookedTour.php" aria-expanded="true" aria-controls="collapseTwo">
     <i class="fas fa-fw fa-dollar-sign"></i>
-      <span>Booking</span>
+      <span>Tours Booked</span>
     </a>
   </li>
 
 
-
-
-  <!-- Booking Handling -->
   <li class="nav-item">
-    <a class="nav-link collapsed" href="/Profile/Paymentcard.php" aria-expanded="true" aria-controls="collapseTwo">
+    <a class="nav-link collapsed" href="/Profile/Booking.php" aria-expanded="true" aria-controls="collapseTwo">
     <i class="fas fa-fw fa-dollar-sign"></i>
-      <span>Payment</span>
+      <span>Booking</span>
     </a>
   </li>
 

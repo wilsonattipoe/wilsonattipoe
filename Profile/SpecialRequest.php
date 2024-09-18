@@ -81,19 +81,19 @@ if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
                 <form id="editForm">
                     <div class="form-group">
                         <label for="editRequestTitle">Title</label>
-                        <input type="text" class="form-control" id="editRequestTitle" required>
+                        <input type="text" class="form-control" id="editRequestTitle" value="<?php echo htmlspecialchars($agent['titel']); ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label for="editRequestDescription">Description</label>
-                        <textarea class="form-control" id="editRequestDescription" rows="3"></textarea>
+                        <textarea class="form-control" id="editRequestDescription" rows="3" value="<?php echo htmlspecialchars($agent['location']); ?>" readonly>></textarea>
                     </div>
                     <div class="form-group">
                         <label for="editTourName">Tour Name</label>
-                        <input type="text" class="form-control" id="editTourName">
+                        <input type="text" class="form-control" id="editTourName" value="<?php echo htmlspecialchars($agent['location']); ?>" readonly>>
                     </div>
                     <div class="form-group">
                         <label for="editRequestDate">Date</label>
-                        <input type="date" class="form-control" id="editRequestDate">
+                        <input type="date" class="form-control" id="editRequestDate" value="<?php echo htmlspecialchars($agent['location']); ?>" readonly>>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>

@@ -5,73 +5,93 @@ ini_set('display_errors', 1);
 include("./include/navbar.php");
 include("./include/header.php");
 include("./Database/connect.php");
+include ('./config.php');      
 
 $isLoggedIn = isset($_SESSION['ClientUserID']);
 
 // Fetch tour data from the add_tour.php
-$sql = "SELECT TourName, tourdescription, Price, tourimages, numberperson, TourDuration FROM tours";
+$sql = "SELECT 
+    t.TourName, 
+    t.tourdescription, 
+    t.Price, 
+    t.tourimages, 
+    t.numberperson, 
+    t.TourDuration,
+    t.tourStat_id,
+    s.site_name AS tourSiteName,
+    z.tourStatus AS tourStatus
+FROM tours t
+JOIN tourist_sites s ON t.tour_site_id = s.site_id
+JOIN tourstatus z ON t.tourStat_id = z.tourstat_id;
+";
+
 $result = $conn->query($sql); 
 
-// This function is fetching all details from the tour table that admin currently added to the front end
+$tours = [];
 if ($result->num_rows > 0) {
-    $tours = $result->fetch_all(MYSQLI_ASSOC);
+    while ($row = $result->fetch_assoc()) {
+        $tours[] = $row;
+    }
 } else {
-    $tours = [];
+    echo "No tours found!";
 }
+
+
 
 // Close the connection 
 $conn->close();
 ?>
 
 
-    <!-- About Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
-                    <div class="position-relative h-100">
-                        <img class="img-fluid position-absolute w-100 h-100" src="img/bus1.jpg" alt="" style="object-fit: cover;">
+<!-- About Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+                <div class="position-relative h-100">
+                    <img class="img-fluid position-absolute w-100 h-100" src="img/bus1.jpg" alt="" style="object-fit: cover;">
+                </div>
+            </div>
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
+                <h1 class="mb-4">Welcome to <span class="text-primary">Travel&Tour</span></h1>
+                <p class="mb-4">we believe that traveling is not just about reaching a destination; it's about the journey, the experiences, and the memories that last a lifetime. Whether you're seeking an adventurous escape, a relaxing retreat, or a cultural immersion, we have curated a selection of exceptional travel packages to cater to every wanderlust.</p>
+                
+                <div class="row gy-2 gx-4 mb-4">
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>First Class Tour</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Handpicked Hotels</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>5 Star Accommodations</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Latest Model Vehicles</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>150 Premium City Tours</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>24/7 Service</p>
                     </div>
                 </div>
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
-                    <h1 class="mb-4">Welcome to <span class="text-primary">Travel&Tour</span></h1>
-                    <p class="mb-4">we believe that traveling is not just about reaching a destination; it's about the journey, the experiences, and the memories that last a lifetime. Whether you're seeking an adventurous escape, a relaxing retreat, or a cultural immersion, we have curated a selection of exceptional travel packages to cater to every wanderlust.</p>
-                  
-                    <div class="row gy-2 gx-4 mb-4">
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>First Class Tour</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Handpicked Hotels</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>5 Star Accommodations</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Latest Model Vehicles</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>150 Premium City Tours</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>24/7 Service</p>
-                        </div>
-                    </div>
-                    <a class="btn btn-primary py-3 px-5 mt-2" href="/ReadMore.php">Read More</a>
-                </div>
+                <a class="btn btn-primary py-3 px-5 mt-2" href="/ReadMore.php">Read More</a>
             </div>
         </div>
     </div>
-    <!-- About End -->
+</div>
+<!-- About End -->
+
 
     <<!-- Video Start -->
 <div class="container-xxl py-5 px-0 wow zoomIn" data-wow-delay="0.1s">
     <div class="row g-0">
         <div class="col-md-6 bg-dark d-flex align-items-center">
             <div class="p-5">
-                <h6 class="section-title text-start text-white text-uppercase mb-3">Luxury Living</h6>
-                <h1 class="text-white mb-4">Discover A Brand New Travel&Tour</h1>
+                <h6 class="section-title text-start text-white text-uppercase mb-3">Luxury Tour</h6>
+                <h1 class="text-white mb-4">Discover A Brand New Travelling</h1>
                 <p class="text-white mb-4">We take care of all the details, so you don't have to. From flights and accommodations to tours and transfers, we handle everything. All you need to do is pack your bags and get ready for an unforgettable adventure.</p>
             </div>
         </div>
@@ -103,6 +123,10 @@ $conn->close();
 <!-- Video Start -->
     
 
+
+
+
+
 <!-- Service Start -->
 <div class="container-xxl py-5">
     <div class="container">
@@ -112,76 +136,84 @@ $conn->close();
         </div>
         <div class="row g-4">
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/educational-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-globe text-primary mb-4"></i>
-                        <h5>WorldWide Tours</h5>
-                        <p>Explore exotic destinations and experience the world like never before.</p>
+                        <i class="fa fa-3x fa-university text-primary mb-4"></i>
+                        <h5>Educational Tours</h5>
+                        <p>Focus on learning experiences.
+                        Include visits to institutions, historical sites, and lectures on specific topics.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/city-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-hotel text-primary mb-4"></i>
-                        <h5>Hotel Reservation</h5>
-                        <p>Book the finest hotels with ease and enjoy unmatched comfort and luxury.</p>
+                        <i class="fa fa-3x fa-city text-primary mb-4"></i>
+                        <h5>City Tours</h5>
+                        <p> Focus on exploring a particular city.
+                        Include visits to major urban attractions, museums, and neighborhoods</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/festivals-events-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-user text-primary mb-4"></i>
-                        <h5>Travel Guides</h5>
-                        <p>Navigate your adventures with expert guides and make the most of your trip.</p>
+                        <i class="fa fa-3x fa-calendar-alt text-primary mb-4"></i>
+                        <h5>Festivals and Events Tours</h5>
+                        <p>   Organized around specific events or festivals.
+                        Include activities related to the event, such as parades, performances, and celebrations</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/culinary-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-cog text-primary mb-4"></i>
-                        <h5>Event Management</h5>
-                        <p>Turn your events into unforgettable experiences with our professional touch.</p>
+                        <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
+                        <h5>Culinary Tours</h5>
+                        <p>Focus on food and drink experiences.
+                        Include visits to restaurants, food markets, cooking classes, and wine tasting.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/adventure-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-globe text-primary mb-4"></i>
-                        <h5>WorldWide Tours</h5>
-                        <p>Explore exotic destinations and experience the world like never before.</p>
+                        <i class="fa fa-3x fa-hiking text-primary mb-4"></i>
+                        <h5>Adventure Tours</h5>
+                        <p> Involve activities like hiking, rafting, bungee jumping, or zip-lining.
+                        Cater to thrill-seekers and outdoor enthusiasts.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/religious-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-hotel text-primary mb-4"></i>
-                        <h5>Hotel Reservation</h5>
-                        <p>Book the finest hotels with ease and enjoy unmatched comfort and luxury.</p>
+                        <i class="fa fa-3x fa-praying-hands text-primary mb-4"></i>
+                        <h5>Religious or Pilgrimage Tours</h5>
+                        <p>Visit sacred sites and religious landmarks.
+                        Focus on spiritual growth and exploration of religious history</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/safari-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-user text-primary mb-4"></i>
-                        <h5>Travel Guides</h5>
-                        <p>Navigate your adventures with expert guides and make the most of your trip.</p>
+                        <i class="fa fa-3x fa-binoculars text-primary mb-4"></i>
+                        <h5>Safari Tours</h5>
+                        <p>Focus on wildlife viewing, particularly in Africa.
+                        Include guided game drives, nature walks, and stays in safari lodges.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/group-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-cog text-primary mb-4"></i>
-                        <h5>Event Management</h5>
-                        <p>Turn your events into unforgettable experiences with our professional touch.</p>
+                        <i class="fa fa-3x fa-users text-primary mb-4"></i>
+                        <h5>Group Tours</h5>
+                        <p>Pre-arranged tours for groups, often with a fixed itinerary.
+                        Can range from small private groups to large tour groups</p>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -190,50 +222,51 @@ $conn->close();
 
 
 
-    <!-- Destination Start -->
-    <div class="container-xxl py-5 destination">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Destination</h6>
-                <h1 class="mb-5">Popular Destination</h1>
-            </div>
-            <div class="row g-3">
-                <div class="col-lg-7 col-md-6">
-                    <div class="row g-3">
-                        <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/kk.webp" alt="">
-                                <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">10% OFF</div>
-                                <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">Eastern Region</div>
-                            </a>
-                        </div>
-                        <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.3s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/aca.webp" alt="">
-                                <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">25% OFF</div>
-                                <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">Accra</div>
-                            </a>
-                        </div>
-                        <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.5s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/destination-3.jpg" alt="">
-                                <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">35% OFF</div>
-                                <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">Eastern Region</div>
-                            </a>
-                        </div>
+
+<!-- Destination Start -->
+<div class="container-xxl py-5 destination">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Destination</h6>
+            <h1 class="mb-5">Popular Destination</h1>
+        </div>
+        <div class="row g-3">
+            <div class="col-lg-7 col-md-6">
+                <div class="row g-3">
+                    <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
+                        <a class="position-relative d-block overflow-hidden" href="">
+                            <img class="img-fluid" src="img/kk.webp" alt="">
+                            <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">10% OFF</div>
+                            <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">Eastern Region</div>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                        <a class="position-relative d-block overflow-hidden" href="">
+                            <img class="img-fluid" src="img/aca.webp" alt="">
+                            <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">25% OFF</div>
+                            <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">Accra</div>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.5s">
+                        <a class="position-relative d-block overflow-hidden" href="">
+                            <img class="img-fluid" src="img/destination-3.jpg" alt="">
+                            <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">35% OFF</div>
+                            <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">Eastern Region</div>
+                        </a>
                     </div>
                 </div>
-                <div class="col-lg-5 col-md-6 wow zoomIn" data-wow-delay="0.7s" style="min-height: 350px;">
-                    <a class="position-relative d-block h-100 overflow-hidden" href="">
-                        <img class="img-fluid position-absolute w-100 h-100" src="img/ho1.jpg" alt="" style="object-fit: cover;">
-                        <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">20% OFF</div>
-                        <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">HO</div>
-                    </a>
-                </div>
+            </div>
+            <div class="col-lg-5 col-md-6 wow zoomIn" data-wow-delay="0.7s" style="min-height: 350px;">
+                <a class="position-relative d-block h-100 overflow-hidden" href="">
+                    <img class="img-fluid position-absolute w-100 h-100" src="img/ho1.jpg" alt="" style="object-fit: cover;">
+                    <div class="bg-white text-danger fw-bold position-absolute top-0 start-0 m-3 py-1 px-2">20% OFF</div>
+                    <div class="bg-white text-primary fw-bold position-absolute bottom-0 end-0 m-3 py-1 px-2">HO</div>
+                </a>
             </div>
         </div>
     </div>
-    <!-- Destination Start -->
+</div>
+<!-- Destination Start -->
 
 
 <!-- Package Start -->
@@ -244,45 +277,73 @@ $conn->close();
             <h1 class="mb-5">Awesome Packages</h1>
         </div>
         <div class="row g-4 justify-content-center">
-            <?php foreach ($tours as $tour): ?>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="package-item">
+            <?php if (!empty($tours)): ?>
+                <?php foreach ($tours as $tour): ?>
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="package-item">
                         <div class="overflow-hidden">
-                            <img class="img-fluid" src="../uploads/<?php echo htmlspecialchars($tour['tourimages']); ?>" alt="<?php echo htmlspecialchars($tour['TourName']); ?>">
+                            <img class="img-fluid w-100 h-auto" src="../uploads/<?php echo htmlspecialchars($tour['tourimages']); ?>" alt="<?php echo htmlspecialchars($tour['TourName']); ?>">
                         </div>
-                        <div class="d-flex border-bottom">
-                            <small class="flex-fill text-center border-end py-2">
-                                <i class="fa fa-map-marker-alt text-primary me-2"></i><?php echo htmlspecialchars($tour['TourName']); ?>
-                            </small>
-                            <small class="flex-fill text-center border-end py-2">
-                                <i class="fa fa-calendar-alt text-primary me-2"></i><?php echo htmlspecialchars($tour['TourDuration']); ?> Days
-                            </small>
-                            <small class="flex-fill text-center py-2">
-                                <i class="fa fa-user text-primary me-2"></i><?php echo htmlspecialchars($tour['numberperson']); ?> Person
-                            </small>
-                        </div>
-                        <div class="text-center p-4">
-                            <h3 class="mb-0">$<?php echo number_format($tour['Price'], 2); ?></h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
+                            <div class="d-flex border-bottom">
+                                <small class="flex-fill text-center border-end py-2">
+                                    <i class="fa fa-map-marker-alt text-primary me-2"></i><?php echo htmlspecialchars($tour['TourName']); ?>
+                                </small>
+                                <small class="flex-fill text-center border-end py-2">
+                                    <i class="fa fa-location-arrow text-primary me-2"></i><?php echo htmlspecialchars($tour['tourSiteName']); ?>
+                                </small>
+                                <small class="flex-fill text-center border-end py-2">
+                                    <i class="fa fa-calendar-alt text-primary me-2"></i><?php echo htmlspecialchars($tour['TourDuration']); ?> Days
+                                </small>
+                                <small class="flex-fill text-center py-2">
+                                    <i class="fa fa-user text-primary me-2"></i><?php echo htmlspecialchars($tour['numberperson']); ?> Person
+                                </small>
+                                <small class="flex-fill text-center py-2">
+                                    <?php
+                                    // Determine icon class based on status
+                                    switch ($tour['tourStatus']) {
+                                        case 'Active':
+                                            $iconClass = 'fa-check-circle text-success';
+                                            break;
+                                        case 'Inactive':
+                                            $iconClass = 'fa-times-circle text-danger';
+                                            break;
+                                        case 'Pending':
+                                            $iconClass = 'fa-hourglass-half text-warning';
+                                            break;
+                                        default:
+                                            $iconClass = 'fa-question-circle text-muted';
+                                            break;
+                                    }
+                                    ?>
+                                    <i class="fa <?php echo $iconClass; ?> me-2"></i>
+                                    <?php echo htmlspecialchars($tour['tourStatus']); ?> Status
+                                </small>
+
                             </div>
-                            <p><?php echo htmlspecialchars($tour['tourdescription']); ?></p>
-                            <div class="d-flex justify-content-center mb-2">
-                                <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
+                            <div class="text-center p-4">
+                                <h3 class="mb-0">$<?php echo number_format($tour['Price'], 2); ?></h3>
+                                <div class="mb-3">
+                                    <small class="fa fa-star text-primary"></small>
+                                    <small class="fa fa-star text-primary"></small>
+                                    <small class="fa fa-star text-primary"></small>
+                                    <small class="fa fa-star text-primary"></small>
+                                    <small class="fa fa-star text-primary"></small>
+                                </div>
+                                <p><?php echo htmlspecialchars($tour['tourdescription']); ?></p>
+                                <div class="d-flex justify-content-center mb-2">
+                                    <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No tours available at the moment.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 <!-- Package End -->
-
 
 
 
@@ -357,82 +418,82 @@ $conn->close();
 
 
         
-        <!-- Team Start -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Travel Guide</h6>
-                    <h1 class="mb-5">Meet Our Guide</h1>
+<!-- Team Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Travel Guide</h6>
+            <h1 class="mb-5">Meet Our Guide</h1>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="team-item">
+                    <div class="overflow-hidden">
+                        <img class="img-fluid" src="img/wizzy.jpg" alt="">
+                    </div>
+                    <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
+                    </div>
+                    <div class="text-center p-4">
+                        <h5 class="mb-0">Mr.Wisdom</h5>
+                        <small>Technical Director</small>
+                    </div>
                 </div>
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="team-item">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="img/wizzy.jpg" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">Mr.Wisdom</h5>
-                                <small>Technical Director</small>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="team-item">
+                    <div class="overflow-hidden">
+                        <img class="img-fluid" src="img/maron.jpg" alt="">
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="team-item">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="img/maron.jpg" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">Mr.Maron</h5>
-                                <small>Tech CEO</small>
-                            </div>
-                        </div>
+                    <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                        <div class="team-item">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="img/team-3.jpg" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">Mr. Wisdom</h5>
-                                <small>Technical Director</small>
-                            </div>
-                        </div>
+                    <div class="text-center p-4">
+                        <h5 class="mb-0">Mr.Maron</h5>
+                        <small>Tech CEO</small>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                        <div class="team-item">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="img/speny.jpg" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">Miss Spendylove</h5>
-                                <small>Operational Manager</small>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="team-item">
+                    <div class="overflow-hidden">
+                        <img class="img-fluid" src="img/beans.jpg" alt="">
+                    </div>
+                    <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
+                    </div>
+                    <div class="text-center p-4">
+                        <h5 class="mb-0">Mr. Wisdom</h5>
+                        <small>Technical Director</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="team-item">
+                    <div class="overflow-hidden">
+                        <img class="img-fluid" src="img/speny.jpg" alt="">
+                    </div>
+                    <div class="position-relative d-flex justify-content-center" style="margin-top: -19px;">
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
+                    </div>
+                    <div class="text-center p-4">
+                        <h5 class="mb-0">Miss Spendylove</h5>
+                        <small>Operational Manager</small>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Team End -->
+    </div>
+</div>
+<!-- Team End -->
 
 
 <!-- Testimonial Start -->
@@ -471,6 +532,21 @@ $conn->close();
     </div>
 </div>
 <!-- Testimonial End -->
+<br><br><br><br><br>
+<!-- Map  -->
+<div id="map-container" style="position: relative; width: 100%; height: 60vh;">
+    <iframe
+        src="<?php echo $embedUrl; ?>"
+        width="100%"
+        height="100%"
+        title="Map"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        style="border:0;"
+    ></iframe>
+</div>
+
 
             
   <div class="media">
@@ -487,37 +563,12 @@ $conn->close();
         </div>
     </div>
 
-    <!-- <div class="explore">
-        <h2>Explore more on Travel&Tour</h2>
-        <div class="destinations">
-            <div class="destination-category">
-                <h4>Trending Destinations</h4>
-                <div class="destination-list">
-                <a href="/Regions/Accra.php">things to do in Greater Accra Region |</a>
-                    <a href="/Regions/Ashanti.php">things to do in Ashanti Region |</a>
-                    <a href="/Regions/Western.php">things to do in Western Region |</a>
-                    <a href="/Regions/Eastern.php">things to do in Eastern Region |</a>
-                    <a href="/Regions/Central.php">things to do in Central Region |</a>
-                    <a href="/Regions/Northern.php">things to do in Northern Region |</a>
-                    <a href="/Regions/UpperEast.php">things to do in UpperEast Region |</a>
-                    <a href="#">things to do in UpperWest Region |</a>
-                    <a href="/Regions/Volta.php">things to do in Volta Region |</a>
-                    <a href="/Regions/Oti.php">things to do in Oti Region |</a>
-                    <a href="#">things to do in Western North Region |</a>
-                    <a href="#">things to do in Bono Region |</a>
-                    <a href="#">things to do in Bono East Region |</a>
-                    <a href="/Regions/Ahafo.php">things to do in Ahafo Region |</a>
-                    <a href="#">things to do in Savannah Region |</a>
-                </div>
-            </div>
-        </div>
-    </div> -->
         
 
-    <?php
-    include("./scripts/scriptsLinks.php");
-    include("./include/footer.php");
-    ?>
+<?php
+include("./scripts/scriptsLinks.php");
+include("./include/footer.php");
+?>
 
 
 

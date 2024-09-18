@@ -1,6 +1,21 @@
-<footer class="footer">
-  <div class="container-fluid clearfix">
-    <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
-  </div>
+<footer>
+<p id="copyright"></p>
 </footer>
+
+<style>
+  footer {
+            text-align: center; 
+            color:#34495e;
+        }
+
+</style>
+
+
+    <!-- Copyright -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        const currentYear=new Date().getFullYear();
+        const Copyrightelement=document.getElementById('copyright');
+        Copyrightelement.innerText=  `© ${currentYear} Travel and Tour. All Rights Reserved.`;
+      });
+    </script>

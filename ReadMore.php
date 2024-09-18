@@ -1,6 +1,6 @@
 <?php
-include("../BookingTour/include/header.php");
-include("../BookingTour/include/header.php");
+include(".//include/header.php");
+include(".//include/header.php");
 ?>
 
 
@@ -65,7 +65,6 @@ Let us ignite your sense of adventure and guide you toward creating memories tha
                     <img class="img-fluid mb-4" src="img/service-1.jpg" alt="">
                     <h4 class="mb-3">Custom Travel Planning</h4>
                     <p class="mb-4">Our team of experts works closely with you to design personalized travel plans tailored to your preferences and interests.</p>
-                    <a class="btn btn-outline-primary px-4 py-2" href="">Read More</a>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
@@ -73,7 +72,6 @@ Let us ignite your sense of adventure and guide you toward creating memories tha
                     <img class="img-fluid mb-4" src="img/service-2.jpg" alt="">
                     <h4 class="mb-3">Exclusive Tours</h4>
                     <p class="mb-4">Discover unique and exclusive tours that provide one-of-a-kind experiences you won't find anywhere else.</p>
-                    <a class="btn btn-outline-primary px-4 py-2" href="">Read More</a>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
@@ -81,7 +79,6 @@ Let us ignite your sense of adventure and guide you toward creating memories tha
                     <img class="img-fluid mb-4" src="img/service-3.jpg" alt="">
                     <h4 class="mb-3">24/7 Customer Support</h4>
                     <p class="mb-4">Our dedicated customer support team is available around the clock to assist you with any needs or concerns.</p>
-                    <a class="btn btn-outline-primary px-4 py-2" href="">Read More</a>
                 </div>
             </div>
         </div>

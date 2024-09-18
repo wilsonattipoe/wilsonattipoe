@@ -1,44 +1,108 @@
 <?php
+session_start();
 include('../Employee/include/header.php');
 include('../Employee/include/navbar.php');
+include('../Employee/Database/connect.php');
+
+
+// Check if the user is logged in and has the correct role and status
+if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], $_SESSION['statusID'])) {
+    $roleID = $_SESSION['RoleID'];
+    $statusID = $_SESSION['statusID'];
+    $username = $_SESSION['Username'];
+
+    // Only allow access if the user is an Employee and has an active status
+    if ($roleID == 4 && $statusID == 1) {
+   
+        if (!isset($_SESSION['welcome_message_shown'])) {
+            $_SESSION['welcome_message_shown'] = true; 
+            displayMessage('Welcome ' . $username, 'You have successfully logged in', 'success');
+        }
+
+        // Count function: Counting the total number of items in the database
+        $queries = array(
+            'Total client' => "SELECT COUNT(ClientUserID) AS count FROM clientusers",
+            'Total booktours' => "SELECT COUNT(bookTour_ID) AS count FROM booktours",
+        );
+
+                   // Query to get total price
+                   $sql = "SELECT SUM(price) AS total_price FROM booktours";
+                   $result = $conn->query($sql);
+       
+                   if ($result->num_rows > 0) {
+                       // Fetch the result
+                       $row = $result->fetch_assoc();
+                       $total_price = $row['total_price'];
+                   } else {
+                       $total_price = 0;
+                   }
+       
+        // Execute queries and store counts
+        $counts = array();
+        foreach ($queries as $label => $query) {
+            $result = $conn->query($query);
+            if ($result) {
+                $row = $result->fetch_assoc();
+                $counts[$label] = $row['count'];
+            } else {
+                echo "Error executing query: " . $conn->error;
+            }
+        }
+    } else {
+        // Unauthorized access
+        displayMessage('Error', 'Unauthorized access.', 'error', '../logout.php');
+        // Log out user
+        session_unset();
+        session_destroy();
+        exit();
+    }
+} else {
+    // If session variables are not set, display an error and redirect to login
+    displayMessage('Error', 'Session not set.', 'error', '../logout.php');
+    // Log out user
+    session_unset();
+    session_destroy();
+    exit();
+}
+
+
 
 ?>
 
-
-<!-- Begin Page Content -->
-<div class="container-fluid">
-
-
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h6 class="h2 mb-0 text-gray-600">Welcome,<?php echo $username; ?>,to your Employee Dashboard!</h6>
+    </div>
 
     <!-- Content Row -->
     <div class="row">
 
         <!-- Travel Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card card-metric-purple shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
+                    <div class="row no-gutters align-items-center ">
                         <div class="col mr-2">
-                        <h2>Users<br><i class="fas fa-users fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-users fa-sm text-green-100" style="color: green; ">&nbsp;<?php echo $counts ["Total client"]; ?>
+                        </i></h2>
+                        <span><i class="fa fa-arrow-up" style="color:green;">Client users</i> </span>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                            <i class="fas fa-users fa-2x text-gray-300 "></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <!-- Revenue Card -->
+            <!-- Revenue Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
+            <div class="card card-metric-purple shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2>Revenue<br><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                            <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp; <?php echo number_format($total_price, 2); ?></i></h2>
+                            <span><i class="fa fa-arrow-up text-green-100" style="color:green;"> Revenue income</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -50,12 +114,12 @@ include('../Employee/include/navbar.php');
 
         <!-- Bookings Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
+            <div class="card card-metric-purple shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2>Bookings<br><i class="fas fa-clipboard-list fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp; <?php echo $counts ['Total booktours']; ?></i></h2>
+                        <span><i class="fa fa-arrow-up text-green-100"  style="color:green;">Bookings</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -67,15 +131,15 @@ include('../Employee/include/navbar.php');
 
         <!-- Pending Requests Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card card-metric-purple shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2>Inovices<br><i class="fas fa-comments fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp;3</i></h2>
+                        <span><i class="fa fa-arrow-up text-green-100"  style="color:green;">User Feedbacks</i></span>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            <i class="fas fa-comments fa-2x text-gray-300"  style="color:green;"></i>
                         </div>
                     </div>
                 </div>
@@ -85,59 +149,69 @@ include('../Employee/include/navbar.php');
 
     <!-- Additional Content Row -->
 
-
-
-
-        <!-- Recent Bookings Table -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Booking ID</th>
-                                    <th>Customer</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>12345</td>
-                                    <td>John Doe</td>
-                                    <td>$150</td>
-                                </tr>
-                                <tr>
-                                    <td>12346</td>
-                                    <td>Jane Smith</td>
-                                    <td>$200</td>
-                                </tr>
-                                <!-- Add more rows as needed -->
-                            </tbody>
-                        </table>
-                    </div>
+   <!-- Recent Bookings Table -->
+   <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Contact</th>
+                                <th>Amount</th>
+                                <th>Tour Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody">
+                            <!-- Data will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
 
-</div>
-<!-- /.container-fluid -->
-
-
-
- 
-
  
 
 <?php
-include('../Employee/include/footer.php');
+// include('../Employee/include/footer.php');
 include('../Employee/include/script.php');
 
 ?>
 
 
+
+
+<script>
+        $(document).ready(function() {
+            $.ajax({
+                url: './fetch_recent_bookings.php', 
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (Array.isArray(data)) {
+                        var rows = '';
+                        data.forEach(function(booking) {
+                            rows += '<tr>' +
+                                '<td>' + booking.customerName + '</td>' +
+                                '<td>' + booking.customerContact + '</td>' +
+                                '<td>$' + booking.amount + '</td>' +
+                                '<td>' + booking.tourType + '</td>' +
+                                '</tr>';
+                        });
+                        $('#bookingTableBody').html(rows);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+    </script>

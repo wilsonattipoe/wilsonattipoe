@@ -38,6 +38,7 @@ $email = $email ?? 'Not Available';
                 <div class="card-body" style="justify-content:center;">
                     <div class="text-center">
                         <h1 class="text-center">Profile</h1>
+                        <img class="img-profile rounded-circle" src="Assests/img/undraw_profile.svg">
                         <hr>
                         <!-- Display the user details directly -->
                         <p class="card-text">Full Name: <?= htmlspecialchars($username) ?></p>

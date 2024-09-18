@@ -29,3 +29,14 @@
 
     <!-- Page Wrapper -->
     <div id="wrapper">
+
+    <style>
+        
+/*** Booking ***/
+.booking {
+    background: linear-gradient(rgba(15, 23, 43, .7), rgba(15, 23, 43, .7)), url(../img/book4.avif);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+    </style>

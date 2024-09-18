@@ -1,12 +1,9 @@
 <?php
-
 // Database connection
-include('../Profile/Database/connect.php');
-
+include("./Database/connect.php");
 
 // Fetch countries
-
-$sql = "SELECT country_name, continent FROM country ORDER BY continent, country_name";
+$sql = "SELECT country_id, country_name FROM countries ORDER BY country_name";
 $result = $conn->query($sql);
 
 $countries = [];

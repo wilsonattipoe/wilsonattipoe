@@ -1,6 +1,75 @@
 <?php
-include('../Supervisor/include/header.php');
-include('../Supervisor/include/navbar.php');
+session_start();
+include("./include/header.php");
+include("./include/navbar.php");
+include("./Database/connect.php");
+
+
+
+
+
+// Check if the user is logged in and has the correct role and status
+if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], $_SESSION['statusID'])) {
+    $roleID = $_SESSION['RoleID'];
+    $statusID = $_SESSION['statusID'];
+    $username = $_SESSION['Username'];
+
+    // Only allow access if the user is an Admin and has an active status
+    if ($roleID == 2 && $statusID == 1) {
+   
+        if (!isset($_SESSION['welcome_message_shown'])) {
+            $_SESSION['welcome_message_shown'] = true; 
+            displayMessage('Welcome ' . $username, 'You have successfully logged in', 'success');
+        }
+
+        // Count function: Counting the total number of items in the database
+        $queries = array(
+            'Total client' => "SELECT COUNT(ClientUserID) AS count FROM clientusers",
+            'Total booktours' => "SELECT COUNT(bookTour_ID) AS count FROM booktours",
+        );
+
+                    // Query to get total price
+            $sql = "SELECT SUM(price) AS total_price FROM booktours";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                // Fetch the result
+                $row = $result->fetch_assoc();
+                $total_price = $row['total_price'];
+            } else {
+                $total_price = 0;
+            }
+
+        // Execute queries and store counts
+        $counts = array();
+        foreach ($queries as $label => $query) {
+            $result = $conn->query($query);
+            if ($result) {
+                $row = $result->fetch_assoc();
+                $counts[$label] = $row['count'];
+            } else {
+                echo "Error executing query: " . $conn->error;
+            }
+        }
+    } else {
+        // Unauthorized access
+        displayMessage('Error', 'Unauthorized access.', 'error', '../logout.php');
+        // Log out user
+        session_unset();
+        session_destroy();
+        exit();
+    }
+} else {
+    // If session variables are not set, display an error and redirect to login
+    displayMessage('Error', 'Session not set.', 'error', '../logout.php');
+    // Log out user
+    session_unset();
+    session_destroy();
+    exit();
+}
+
+
+
 ?>
 
 <!-- Begin Page Content -->
@@ -8,10 +77,11 @@ include('../Supervisor/include/navbar.php');
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm shadow-sm btn-32012F">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
-        </a>
+       
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h6 class="h2 mb-0 text-gray-600">Welcome,<?php echo $username; ?>,to your Supervisor Dashboard!</h6>
+    </div>
     </div>
 
     <!-- Content Row -->
@@ -23,8 +93,9 @@ include('../Supervisor/include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-users fa-sm text-white-100" style="color: #0C1844; ">&nbsp;<?php echo $counts ["Total client"]; ?>
+                        </i></h2>
+                        <span><i class="fa fa-arrow-up" style="color:#0C1844;">Client users</i> </span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -40,8 +111,8 @@ include('../Supervisor/include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:#0C1844;">&nbsp; <?php echo number_format($total_price, 2); ?></i></h2>
+                    <span><i class="fa fa-arrow-up text-white-100" style="color:#0C1844;"> Revenue income</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -57,8 +128,8 @@ include('../Supervisor/include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:#0C1844;">&nbsp; <?php echo $counts ['Total booktours']; ?></i></h2>
+                        <span><i class="fa fa-arrow-up text-white-100"  style="color:#0C1844;">Bookings</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -74,8 +145,8 @@ include('../Supervisor/include/navbar.php');
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100"></i>&nbsp;24,590</h2>
-                        <span><i class="fa fa-arrow-up"></i> +12.07%</span>
+                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:#0C1844;">&nbsp;3</i></h2>
+                        <span><i class="fa fa-arrow-up text-white-100"  style="color:#0C1844;">User Feedbacks</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -91,74 +162,13 @@ include('../Supervisor/include/navbar.php');
 
 
 
-            <!-- Booking chart included here Eli -->
-            <?php
-            include "../Supervisor/chart.php";
-            ?>
-
-
-
-
-        <!-- Recent Bookings Table -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Booking ID</th>
-                                    <th>Customer</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>12345</td>
-                                    <td>John Doe</td>
-                                    <td>$150</td>
-                                </tr>
-                                <tr>
-                                    <td>12346</td>
-                                    <td>Jane Smith</td>
-                                    <td>$200</td>
-                                </tr>
-                                <!-- Add more rows as needed -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Activities Row -->
-    <div class="row">
-        <div class="col-lg-12 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
-                </div>
-                <div class="card-body">
-                    <ul>
-                        <li>John Doe booked a tour to Paris on June 20, 2024.</li>
-                        <li>Jane Smith requested a refund for her booking on June 18, 2024.</li>
-                        <!-- Add more activities as needed -->
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-<!-- /.container-fluid -->
-
+    <!-- Booking chart included here Eli -->
+    <?php
+    include "../Supervisor/chart.php";
+    ?>
 
 <?php
-include('../Supervisor/include/footer.php');
+// include('../Supervisor/include/footer.php');
 include('../Supervisor/include/script.php');
 ?>
 

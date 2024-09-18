@@ -21,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
+    $adminusers = isset($_SESSION['AdminUserID']) ? $_SESSION['AdminUserID'] : null; // Ensure AdminUserID is available
+
     // Prepare the update query
     $query = "UPDATE $userTable SET Username=?, Email=?";
     if (!empty($password)) {
@@ -44,12 +46,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'success' => true,
             'message' => 'Profile updated successfully'
         ];
+
+        // Log the successful update
+        if ($adminusers !== null) {
+            $action = 'Updated profile';
+            $details = "User ID: $userId";
+
+            $logStmt = $conn->prepare("INSERT INTO activitylogs (clientusers, adminusers, action, action_time, ip_address, details) VALUES (NULL, ?, ?, NOW(), ?, ?)");
+            $ipAddress = $_SERVER['REMOTE_ADDR'];
+            $logStmt->bind_param("ssss", $adminusers, $action, $ipAddress, $details);
+            $logStmt->execute();
+            $logStmt->close();
+        }
     } else {
         $response = [
             'status' => 'ok',
             'success' => false,
             'message' => 'Failed to update profile'
         ];
+
+        // Log the failure
+        if ($adminusers !== null) {
+            $action = 'Failed to update profile';
+            $details = "User ID: $userId, Error: " . $stmt->error;
+
+            $logStmt = $conn->prepare("INSERT INTO activitylogs (clientusers, adminusers, action, action_time, ip_address, details) VALUES (NULL, ?, ?, NOW(), ?, ?)");
+            $ipAddress = $_SERVER['REMOTE_ADDR'];
+            $logStmt->bind_param("ssss", $adminusers, $action, $ipAddress, $details);
+            $logStmt->execute();
+            $logStmt->close();
+        }
     }
     $stmt->close();
     $conn->close();

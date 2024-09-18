@@ -30,6 +30,7 @@ $stmt->close();
             <div class="card shadow">
                 <div class="card-body text-center">
                     <h1 class="text-center">Profile</h1>
+                    <img class="img-profile rounded-circle" src="Assests/img/undraw_profile.svg">
                     <hr>
                     <?php if (isset($username)) : ?>
                             <p class="card-text">Full Name: <?= $username ?></p>

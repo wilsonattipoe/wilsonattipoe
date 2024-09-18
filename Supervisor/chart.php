@@ -1,3 +1,66 @@
+<?php
+
+// Database connection
+include('../Supervisor/Database/connect.php');
+
+$sql = "
+    SELECT 
+        MONTHNAME(Dated) as month, 
+        WEEK(Dated) as week, 
+        COUNT(bookTour_ID) as totalBookings, 
+        SUM(price) as totalAmount
+    FROM 
+        booktours
+    WHERE 
+        YEAR(Dated) = YEAR(CURDATE())  -- Filter for the current year
+    GROUP BY 
+        MONTH(Dated), WEEK(Dated)
+    ORDER BY 
+        MONTH(Dated), WEEK(Dated)
+";
+$result = $conn->query($sql);
+
+$monthlyData = [];
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $month = $row['month'];
+        $week = "Week " . $row['week'];
+        
+        if (!isset($monthlyData[$month])) {
+            $monthlyData[$month] = [];
+        }
+
+        $monthlyData[$month][$week] = [
+            'totalBookings' => $row['totalBookings'],
+            'totalAmount' => $row['totalAmount']
+        ];
+    }
+}
+
+$formattedData = [];
+
+foreach ($monthlyData as $month => $weeks) {
+    $formattedData[$month] = [
+        'bookings' => [],
+        'amount' => []
+    ];
+
+    foreach ($weeks as $week => $data) {
+        $formattedData[$month]['bookings'][] = $data['totalBookings'];
+        $formattedData[$month]['amount'][] = $data['totalAmount'];
+    }
+}
+
+
+?>
+
+
+
+
+
+
+
 <!-- Dropdown menu for selecting months -->
 <div class="row">
         <!-- Booking Trends Chart -->

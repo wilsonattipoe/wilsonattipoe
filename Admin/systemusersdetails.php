@@ -20,7 +20,7 @@ include('include/navbar.php');
 <section class="user-details" style="max-height: 800px; overflow-y: auto;" >
     <div class="attendance-user">
         <div class="text-center">
-            <h2 class="static-header" style="background-color:#2D1D4C; color:white;">User Details</h2>
+            <h2 class="static-header" style="background-color:#2D1D4C; color:white;">Administrators Details</h2>
         </div>
         <table class="table table-bordered table-striped ">
             <thead>

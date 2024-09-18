@@ -14,16 +14,16 @@ require '../vendor/autoload.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $message = $_POST['message'];
+    $errorCount = 0;
 
     // Database connection code
     require_once('../Admin/Database/connect.php');
 
     // Fetch users from database
-    $sql = "SELECT `ClientUserID`, `FullName`, `Email` FROM `clientusers` WHERE 1";
+    $sql = "SELECT `ClientUserID`, `FullName`, `Email` FROM `clientusers` WHERE =?";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-
         while ($row = $result->fetch_assoc()) {
             $email = $row['Email'];
             $fullName = $row['FullName'];
@@ -48,11 +48,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $mail->Subject = "Tour Announcement";
                 $mail->Body = "Dear $fullName,<br><br>$message";
                 $mail->send();
-               
+
+                // Log successful email sending
+                $action = 'Sent email';
+                $details = "Email sent to $fullName ($email)";
+
+                if (isset($_SESSION['AdminUserID'])) {
+                    $adminusers = $_SESSION['AdminUserID'];
+                    $logStmt = $conn->prepare("INSERT INTO activitylogs (clientusers, adminusers, action, action_time, ip_address, details) VALUES (NULL, ?, ?, NOW(), ?, ?)");
+                    $ipAddress = $_SERVER['REMOTE_ADDR'];
+                    $logStmt->bind_param("ssss", $adminusers, $action, $ipAddress, $details);
+                    $logStmt->execute();
+                    $logStmt->close();
+                }
+
             } catch (Exception $e) {
                 $errorCount++;
+
+                // Log email sending error
+                $action = 'Failed to send email';
+                $details = "Email sending to $fullName ($email) failed. Error: " . $mail->ErrorInfo;
+
+                if (isset($_SESSION['AdminUserID'])) {
+                    $adminusers = $_SESSION['AdminUserID'];
+                    $logStmt = $conn->prepare("INSERT INTO activitylogs (clientusers, adminusers, action, action_time, ip_address, details) VALUES (NULL, ?, ?, NOW(), ?, ?)");
+                    $ipAddress = $_SERVER['REMOTE_ADDR'];
+                    $logStmt->bind_param("ssss", $adminusers, $action, $ipAddress, $details);
+                    $logStmt->execute();
+                    $logStmt->close();
+                }
             }
         }
+
         echo "Emails sent successfully";
     } else {
         echo "No users found in the database.";

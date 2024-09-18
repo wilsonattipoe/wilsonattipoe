@@ -55,9 +55,8 @@ session_start();
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu m-0">
                         <a href="destination.php" class="dropdown-item">Destination</a>
-                        <a href="booking.php" class="dropdown-item">Booking</a>
+                        <!-- <a href="booking.php" class="dropdown-item">Booking</a> -->
                         <a href="team.php" class="dropdown-item">Travel Guides</a>
-                        <a href="testimonial.php" class="dropdown-item">Testimonial</a>
                     </div>
                 </div>
                 <a href="contact.php" class="nav-item nav-link">Contact</a>
@@ -72,9 +71,9 @@ session_start();
                             <?php echo isset($_SESSION['Username']) ? htmlspecialchars($_SESSION['Username']) : 'User'; ?>
                         </i>
                     </a>
-                    <div class="dropdown-menu p-2 shadow" aria-labelledby="dropdownMenuButton" style="border-radius:8%;">
+                    <div class="dropdown-menu p-2 shadow" aria-labelledby="dropdownMenuButton" style="border-radius:8%; color:aqua;">
                         <a class="dropdown-item d-flex align-items-center" href="/Profile/Booking.php">
-                            <i class="fa fa-user me-2"></i>Profile
+                            <i class="fa fa-user me-2"></i>Dashboard
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item d-flex align-items-center" href="../logout.php">
@@ -140,8 +139,8 @@ session_start();
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Enjoy Your Tour With Us</h1>
                     <p class="fs-4 text-white mb-4 animated slideInDown">Escape to a world of relaxation and adventure with our premium vacation packages. Whether you're dreaming of sandy beaches, vibrant cityscapes, or serene countryside retreats, we offer a range of destinations tailored to your desires.</p>
                     <div class="position-relative w-75 mx-auto animated slideInDown">
-                        <input class="form-control border-0 rounded-pill w-100 py-3 ps-4 pe-5" name="query" type="text" placeholder="Eg: HO">
-                        <button type="button" class="btn btn-primary rounded-pill py-2 px-4 position-absolute top-0 end-0 me-2" style="margin-top: 7px;">Search</button>
+                        <!-- <input class="form-control border-0 rounded-pill w-100 py-3 ps-4 pe-5" name="query" type="text" placeholder="Eg: HO">
+                        <button type="button" class="btn btn-primary rounded-pill py-2 px-4 position-absolute top-0 end-0 me-2" style="margin-top: 7px;">Search</button> -->
                     </div>
                 </div>
             </div>
