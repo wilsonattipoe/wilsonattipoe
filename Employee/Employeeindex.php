@@ -13,9 +13,9 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
 
     // Only allow access if the user is an Employee and has an active status
     if ($roleID == 4 && $statusID == 1) {
-   
+
         if (!isset($_SESSION['welcome_message_shown'])) {
-            $_SESSION['welcome_message_shown'] = true; 
+            $_SESSION['welcome_message_shown'] = true;
             displayMessage('Welcome ' . $username, 'You have successfully logged in', 'success');
         }
 
@@ -25,18 +25,19 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
             'Total booktours' => "SELECT COUNT(bookTour_ID) AS count FROM booktours",
         );
 
-                   // Query to get total price
-                   $sql = "SELECT SUM(price) AS total_price FROM booktours";
-                   $result = $conn->query($sql);
-       
-                   if ($result->num_rows > 0) {
-                       // Fetch the result
-                       $row = $result->fetch_assoc();
-                       $total_price = $row['total_price'];
-                   } else {
-                       $total_price = 0;
-                   }
-       
+        // Query to get total price
+        $sql = "SELECT sum(bookPrice) as total_price FROM `booktours` B
+                            join tours T on B.tour_id = T.TourID";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            // Fetch the result
+            $row = $result->fetch_assoc();
+            $total_price = $row['total_price'];
+        } else {
+            $total_price = 0;
+        }
+
         // Execute queries and store counts
         $counts = array();
         foreach ($queries as $label => $query) {
@@ -69,114 +70,120 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
 
 ?>
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h6 class="h2 mb-0 text-gray-600">Welcome,<?php echo $username; ?>,to your Employee Dashboard!</h6>
-    </div>
+</div>
 
-    <!-- Content Row -->
-    <div class="row">
+<!-- Content Row -->
+<div class="row">
 
-        <!-- Travel Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card card-metric-purple shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center ">
-                        <div class="col mr-2">
-                        <h2><i class="fas fa-users fa-sm text-green-100" style="color: green; ">&nbsp;<?php echo $counts ["Total client"]; ?>
-                        </i></h2>
-                        <span><i class="fa fa-arrow-up" style="color:green;">Client users</i> </span>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300 "></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!-- Revenue Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card card-metric-purple shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp; <?php echo number_format($total_price, 2); ?></i></h2>
-                            <span><i class="fa fa-arrow-up text-green-100" style="color:green;"> Revenue income</i></span>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bookings Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card card-metric-purple shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp; <?php echo $counts ['Total booktours']; ?></i></h2>
-                        <span><i class="fa fa-arrow-up text-green-100"  style="color:green;">Bookings</i></span>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Requests Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card card-metric-purple shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp;3</i></h2>
-                        <span><i class="fa fa-arrow-up text-green-100"  style="color:green;">User Feedbacks</i></span>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"  style="color:green;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Additional Content Row -->
-
-   <!-- Recent Bookings Table -->
-   <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
-            </div>
+    <!-- Travel Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-metric-purple shadow h-100 py-2">
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Contact</th>
-                                <th>Amount</th>
-                                <th>Tour Type</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bookingTableBody">
-                            <!-- Data will be inserted here by JavaScript -->
-                        </tbody>
-                    </table>
+                <div class="row no-gutters align-items-center ">
+                    <div class="col mr-2">
+                        <h2><i class="fas fa-users fa-sm text-green-100" style="color: green; ">&nbsp;<?php echo $counts["Total client"]; ?>
+                            </i></h2>
+                        <span><i class="fa fa-arrow-up" style="color:green;">Client users</i> </span>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300 "></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Revenue Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-metric-purple shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp; <?php echo number_format($total_price, 2); ?></i></h2>
+                        <span><i class="fa fa-arrow-up text-green-100" style="color:green;"> Revenue income</i></span>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
- 
+    <!-- Bookings Card -->
+    <div class="">
+        <div class="card card-metric-purple shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp; <?php echo $counts['Total booktours']; ?></i></h2>
+                        <span><i class="fa fa-arrow-up text-green-100" style="color:green;">Bookings</i></span>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-metric-purple shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <h2><i class="fas fa-money-check-alt fa-sm text-green-100" style="color:green;">&nbsp;3</i></h2>
+                        <span><i class="fa fa-arrow-up text-green-100" style="color:green;">User Feedbacks</i></span>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300" style="color:green;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Content Row -->
+
+<!-- Recent Bookings Table -->
+<div class="">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Tour Name</th>
+                            <th>Tour Type</th>
+                            <th>Amount ($)</th>
+                            <th>Participants</th>
+                            <th>Total left</th>
+                            <th>start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="bookingTableBody">
+                        <!-- Data will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <?php
 // include('../Employee/include/footer.php');
@@ -188,30 +195,47 @@ include('../Employee/include/script.php');
 
 
 <script>
-        $(document).ready(function() {
-            $.ajax({
-                url: './fetch_recent_bookings.php', 
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    if (Array.isArray(data)) {
-                        var rows = '';
-                        data.forEach(function(booking) {
-                            rows += '<tr>' +
-                                '<td>' + booking.customerName + '</td>' +
-                                '<td>' + booking.customerContact + '</td>' +
-                                '<td>$' + booking.amount + '</td>' +
-                                '<td>' + booking.tourType + '</td>' +
-                                '</tr>';
-                        });
-                        $('#bookingTableBody').html(rows);
-                    } else {
-                        console.error('Unexpected data format:', data);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
+    $(document).ready(function() {
+        $.ajax({
+            url: './fetch_recent_bookings.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                if (Array.isArray(data)) {
+                    var rows = '';
+                    data.forEach(function(booking) {
+                        var actionClass = ''; // For the dynamic badge class
+
+                        // Assign the correct class based on ActionName
+                        if (booking.ActionName === 'Pending') {
+                            actionClass = 'badge-warning';
+                        } else if (booking.ActionName === 'Ongoing') {
+                            actionClass = 'badge-primary';
+                        } else if (booking.ActionName === 'Rejected') {
+                            actionClass = 'badge-danger';
+                        }
+
+                        // Create table row with dynamic content and classes
+                        rows += '<tr>' +
+                            '<td>' + booking.Username + '</td>' +
+                            '<td>' + booking.TourName + '</td>' +
+                            '<td>' + booking.TourTypeName + '</td>' +
+                            '<td>$' + booking.bookPrice + '</td>' +
+                            '<td>' + booking.participants + '</td>' +
+                            '<td>' + booking.total_left + '</td>' +
+                            '<td>' + booking.start_date + '</td>' +
+                            '<td>' + booking.end_date + '</td>' +
+                            '<td><span class="badge ' + actionClass + '">' + booking.ActionName + '</span></td>' +
+                            '</tr>';
+                    });
+                    $('#bookingTableBody').html(rows);
+                } else {
+                    console.error('Unexpected data format:', data);
                 }
-            });
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
         });
-    </script>
+    });
+</script>

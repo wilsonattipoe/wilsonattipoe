@@ -6,38 +6,16 @@ include("./include/header.php");
 include("./include/navbar.php");
 include("./Database/connect.php");
 
-
 $isLoggedIn = isset($_SESSION['ClientUserID']);
 $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
-
 ?>
 <div id="booking" class="content-section" style="margin: 15px;">
-  <h1 class="text-center">Educational  tour</h1> 
+    <h1 class="text-center">Culinary Tour</h1>
 </div>
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div id="tour-container">
             <!-- Tour packages will be dynamically loaded here -->
-        </div>
-    </div>
-</div>
-
-<!-- Book Modal -->
-<div id="BookModel" class="modal fade" style="z-index:1100" >
-    <div class="modal-dialog" >
-        <div class="modal-content" id="cont">
-            <div class="modal-header">
-                <h4 class="modal-title">Book tour</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to Book this tour?</p>
-            </div>
-            <input type="hidden" id="book_id">
-            <div class="modal-footer">
-                <input type="button"  class="btn btn-outline-success w-20" data-dismiss="modal" value="close">
-                <input type="submit" class="btn btn-outline-danger" onclick="BookTour()" value="Book now">
-            </div>
         </div>
     </div>
 </div>
@@ -52,11 +30,9 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to add this tour to your cart?</p>
-                <form id="addToCartForm">
-                    <div class="form-group">
-                        <input type="hidden" id="cart_id"> <!-- Hidden input for tour ID -->
-                    </div>
-                </form>
+                <div class="form-group">
+                    <input type="hidden" id="cart_id"> <!-- Hidden input for tour ID -->
+                </div>
             </div>
             <div class="modal-footer">
                 <input type="button" class="btn btn-outline-success w-20" data-dismiss="modal" value="Close">
@@ -66,7 +42,20 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
     </div>
 </div>
 
-
+<!-- Image Preview Modal -->
+<div id="imagePreviewModal" class="modal fade" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true" style="z-index: 1100;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imagePreviewModalLabel">Image Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="previewImage" src="" class="img-fluid" alt="Tour Image">
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Login Prompt Modal -->
 <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel" aria-hidden="true" style="z-index:1050;">
@@ -88,67 +77,18 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
     </div>
 </div>
 
-
-
-
-
-
-<!-- book tour -->
+<!-- Scripts -->
 <script>
-    function BookTour() {
-        console.log("AddCart function called");
+    function AddCart() {
         var id = $('#cart_id').val();
         var userID = <?php echo json_encode($ClientUserID); ?>;
-
-        if (!userID) {
-            $('#loginPromptModal').modal('show');
-        } else { $.ajax({
-            type: 'post',
-            url: './fetch_culinary.php',
-            data: {
-                id: id,
-                userID: userID
-            },
-            success: function(data) {
-                var response = JSON.parse(data);
-
-                Swal.fire({
-                    title: response.success ? 'Success' : 'Error',
-                    text: response.message,
-                    icon: response.success ? 'success' : 'error',
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        container: 'swal-custom-container',
-                    },
-                }).then(function() {
-                    if (response.success) {
-                        location.reload();
-                        $('#BookModel').modal('hide');
-                    }
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', status, error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred while processing your request.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    }
-}
-
-function AddCart() {
-        var id = $('#cart_id').val();
-        var userID = <?php echo json_encode($ClientUserID); ?>;
-        var quantity = $('#cartQuantity').val();
-
         $.ajax({
             type: 'post',
             url: 'fetch_Cart.php',
-            data: { userID: userID, quantity: quantity },
+            data: {
+                id: id,
+                userID: userID,
+            },
             success: function(data) {
                 var response = JSON.parse(data);
                 Swal.fire({
@@ -156,7 +96,9 @@ function AddCart() {
                     text: response.message,
                     icon: response.success ? 'success' : 'error',
                     confirmButtonText: 'OK',
-                    customClass: { container: 'swal-custom-container' },
+                    customClass: {
+                        container: 'swal-custom-container'
+                    },
                 }).then(function() {
                     if (response.success) {
                         location.reload();
@@ -176,55 +118,45 @@ function AddCart() {
         });
     }
 
+    function loadTours() {
+        $.ajax({
+            url: 'fetch_advent.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                $('#tour-container').empty();
+                data.forEach(function(tour) {
+                    let tourHtml = `
+                        <div class="tour-card">
+                            <img src="../uploads/${tour['tourimages']}" class="card-img-top" alt="${tour['TourName']}" onclick="showImagePreview('../uploads/${tour['tourimages']}')">
+                            <div class="card-body">
+                                <h5 class="card-title">${tour['TourName']}</h5>
+                                <p class="card-text">${tour['tourdescription']}</p>
+                                <p class="card-text">Date: ${new Date(tour['date']).toLocaleDateString()}</p>
+                                <h3 class="mb-0">$${parseFloat(tour['Price']).toFixed(2)}</h3>
+                                <p class="card-text"><strong>Status:</strong> <span class="status-${tour['tourStatus'].toLowerCase()}">${tour['tourStatus']}</span></p>
+                                <div class="text-right">
+                                    <button class="btn btn-primary btn-sm" onclick="checkLoginAndShowCartModal(${tour['TourID']}, ${tour['tourID']});">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    $('#tour-container').append(tourHtml);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to fetch tours:', status, error);
+            }
+        });
+    }
 
-</script>
-<!-- fetch tour -->
-<script>
-function loadTours() {
-    $.ajax({
-        url: './fetch_culinary.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            $('#tour-container').empty();
+    function showImagePreview(imageSrc) {
+        $('#previewImage').attr('src', imageSrc);
+        $('#imagePreviewModal').modal('show');
+    }
 
-            data.forEach(function(tour) {
-                let tourHtml = `<div class="tour-container">
-                    <img src="../uploads/${tour['tourimages']}" class="card-img-top" alt="${tour['tourname']}">
-                    <div class="card-body">
-                        <h5 class="card-title">${tour['tourname']}</h5>
-                        <p class="card-text">${tour['description']}</p>
-                        <p class="card-text">Date: ${new Date(tour['create_at']).toLocaleDateString()}</p> 
-                        <h3 class="mb-0">$${parseFloat(tour['Price']).toFixed(2)}</h3>
-                        <p class="card-text">
-                            <strong>Status:</strong> 
-                            <span class="status-${tour['tourstatus'].toLowerCase()}">${tour['tourstatus']}</span>
-                        </p>
-                     <div class="text-right">
-                        <button class="btn btn-primary btn-sm" onclick="checkLoginAndShowCartModal(${tour['tourservices_id']}, ${tour['tourID']});">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
-                        </button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="checkLoginAndShowBookModal(${tour['tourservices_id']}, ${tour['tourID']});">
-                            <i class="fas fa-book"></i> Book Now
-                        </button>
-                    </div>
-                    </div>
-                </div>
-            </div>
-
-            `;
-                $('#tour-container').append(tourHtml);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('Failed to fetch tours:', status, error);
-        }
-    });
-}
-
-
-
-function checkLoginAndShowCartModal(tourId) {
+    function checkLoginAndShowCartModal(tourServicesId, tourId) {
         if (!<?php echo json_encode($isLoggedIn); ?>) {
             $('#loginPromptModal').modal('show');
         } else {
@@ -233,84 +165,92 @@ function checkLoginAndShowCartModal(tourId) {
         }
     }
 
-    function checkLoginAndShowBookModal(tourId) {
-        if (!<?php echo json_encode($isLoggedIn); ?>) {
-            $('#loginPromptModal').modal('show');
-        } else {
-            $('#book_id').val(tourId);
-            $('#BookModel').modal('show');
-        }
-    }
-
-
-$(document).ready(function() {
-    loadTours();
-});
+    $(document).ready(function() {
+        loadTours();
+    });
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <style>
     /* Container for the grid */
-.tour-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px; /* Space between cards */
-    padding: 20px;
-    flex-direction: row;
-}
+    .tour-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
 
-/* Card styling */
-.status-ongoing {
-    color: green !important;
-    font-weight: bold;
-}
+    /* Card styling */
+    .status-ongoing {
+        color: green !important;
+        font-weight: bold;
+    }
 
-.status-ended {
-    color: red !important;
-    font-weight: bold;
-}
+    .status-ended {
+        color: red !important;
+        font-weight: bold;
+    }
 
-.status-pending {
-    color: orange !important;
-    font-weight: bold;
-}
+    .status-pending {
+        color: orange !important;
+        font-weight: bold;
+    }
 
-.tour-card {
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-}
+    .tour-card {
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        /* Use flexbox to align image and text in a row */
+        flex-direction: row;
+        /* Ensure elements are arranged in a row */
+        align-items: center;
+        /* Vertically center content */
+        height: 100%;
+        padding: 15px;
+        gap: 20px;
+        /* Add space between the image and content */
+        position: relative;
+    }
 
-/* Ensure the image fits the card */
-.tour-card img {
-    height: 260px;
-    width: 100%;
-    object-fit: cover;
-    flex-direction: column;
-    display: inline-flex;
-}
+    .tour-card img {
+        height: 250px;
+        /* Set a fixed height for the image */
+        width: 350px;
+        /* Set a fixed width for the image */
+        object-fit: cover;
+        cursor: pointer;
+        /* Make the image clickable */
+    }
 
-/* Card body content styling */
-.tour-card .card-body {
-    padding: 15px;
-    flex: 1;
-}
+    .tour-card .card-body {
+        flex-grow: 1;
+        /* Allow the card body to take up remaining space */
+        padding: 0 15px;
+        /* Adjust padding */
+    }
 
-/* Align text and button */
-.tour-card .text-right {
-    margin-top: auto; /* Pushes buttons to the bottom of the card */
-}
+    .tour-card .text-right {
+        margin-top: 15px;
+    }
 
-/* Button styling */
-.tour-card button {
-    margin-left: 5px;
-}
-
+    .tour-card button {
+        margin-left: 5px;
+    }
 </style>
 
 <!-- Bootstrap JS and dependencies -->

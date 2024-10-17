@@ -13,84 +13,84 @@ include("./include/header.php");
         </div>
         <div class="row g-4">
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/educational-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-university text-primary mb-4"></i>
                         <h5>Educational Tours</h5>
                         <p>Focus on learning experiences.
-                        Include visits to institutions, historical sites, and lectures on specific topics.</p>
+                            Include visits to institutions, historical sites, and lectures on specific topics.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/city-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-city text-primary mb-4"></i>
                         <h5>City Tours</h5>
                         <p> Focus on exploring a particular city.
-                        Include visits to major urban attractions, museums, and neighborhoods</p>
+                            Include visits to major urban attractions, museums, and neighborhoods</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/festivals-events-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-calendar-alt text-primary mb-4"></i>
                         <h5>Festivals and Events Tours</h5>
-                        <p>   Organized around specific events or festivals.
-                        Include activities related to the event, such as parades, performances, and celebrations</p>
+                        <p> Organized around specific events or festivals.
+                            Include activities related to the event, such as parades, performances, and celebrations</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/culinary-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
                         <h5>Culinary Tours</h5>
                         <p>Focus on food and drink experiences.
-                        Include visits to restaurants, food markets, cooking classes, and wine tasting.</p>
+                            Include visits to restaurants, food markets, cooking classes, and wine tasting.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/adventure-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-hiking text-primary mb-4"></i>
                         <h5>Adventure Tours</h5>
                         <p> Involve activities like hiking, rafting, bungee jumping, or zip-lining.
-                        Cater to thrill-seekers and outdoor enthusiasts.</p>
+                            Cater to thrill-seekers and outdoor enthusiasts.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/religious-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-praying-hands text-primary mb-4"></i>
                         <h5>Religious or Pilgrimage Tours</h5>
                         <p>Visit sacred sites and religious landmarks.
-                        Focus on spiritual growth and exploration of religious history</p>
+                            Focus on spiritual growth and exploration of religious history</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/safari-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-binoculars text-primary mb-4"></i>
                         <h5>Safari Tours</h5>
                         <p>Focus on wildlife viewing, particularly in Africa.
-                        Include guided game drives, nature walks, and stays in safari lodges.</p>
+                            Include guided game drives, nature walks, and stays in safari lodges.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                <div class="service-item rounded pt-3">
+                <a href="./services/group-tours.php" class="service-item rounded pt-3" style="text-decoration: none; cursor: pointer;">
                     <div class="p-4">
                         <i class="fa fa-3x fa-users text-primary mb-4"></i>
                         <h5>Group Tours</h5>
                         <p>Pre-arranged tours for groups, often with a fixed itinerary.
-                        Can range from small private groups to large tour groups</p>
+                            Can range from small private groups to large tour groups</p>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -136,7 +136,7 @@ include("./include/header.php");
 <!-- Testimonial End -->
 
 
-    <?php
+<?php
 include("./scripts/scriptsLinks.php");
 include("./include/footer.php");
 ?>

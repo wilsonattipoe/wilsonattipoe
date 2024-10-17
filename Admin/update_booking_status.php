@@ -1,31 +1,33 @@
 <?php
 include("./Database/connect.php");
 
-if (isset($_POST['bookingID']) && isset($_POST['action'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bookingID = $_POST['bookingID'];
     $action = $_POST['action'];
 
-    // Retrieve the corresponding ActionID for the action name
-    $query = "SELECT `ActionID`, `ActionName` FROM `actions` WHERE = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('s', $action);
-    $stmt->execute();
-    $stmt->bind_result($actionID);
-    $stmt->fetch();
-    $stmt->close();
+    // Mapping action to ActionID (assumes 'pending' -> 1, 'ongoing' -> 2, 'rejected' -> 3)
+    $actionIDMap = [
+        'pending' => 1,
+        'ongoing' => 2,
+        'rejected' => 3
+    ];
 
-    // Update the Action_id in booktours
-    $updateQuery = "UPDATE booktours SET Action_id = ? WHERE bookTour_ID = ?";
-    $updateStmt = $conn->prepare($updateQuery);
-    $updateStmt->bind_param('ii', $actionID, $bookingID);
+    if (isset($actionIDMap[$action])) {
+        $actionID = $actionIDMap[$action];
+        $sql = "UPDATE booktours SET action_id = ? WHERE bookTour_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('ii', $actionID, $bookingID);
 
-    if ($updateStmt->execute()) {
-        echo 'Action updated';
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error updating status']);
+        }
+
+        $stmt->close();
     } else {
-        echo 'Error updating action: ' . $conn->error;
+        echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
     }
-    $updateStmt->close();
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
 }
-
-$conn->close();
-?>

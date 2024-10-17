@@ -24,7 +24,7 @@ $sql = "SELECT
             cu.Email AS customerEmail,
             cu.location AS customerLocation,
             cu.contact AS customerContact,
-            bt.price AS amount,
+            bookPrice AS amount,
             bt.status AS status,
             bt.Dated AS bookingDate
         FROM 

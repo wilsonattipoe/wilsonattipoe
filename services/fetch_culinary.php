@@ -1,33 +1,37 @@
 <?php
 include("./Database/connect.php");
 
-// Prepare the query
+// Prepare the query with a placeholder
 $sql = "SELECT 
-        ts.tourservices_id, 
-        ts.tourname, 
-        ts.description, 
-        ts.numberperson, 
-        ts.Price, 
-        ts.TourDuration, 
-        ts.tourimages, 
-        ts.create_at, 
-        ts.adminusers, 
-        ts.tourtypes, 
-        tstat.tourStatus AS tourstatus
-    FROM 
-        tourservices ts
-    JOIN 
-        tourstatus tstat ON ts.tourstatus = tstat.tourstat_id
-    WHERE 
-        ts.tourTypes = 7=?
-";
+            `TourID`, 
+            `TourName`,
+            `tourdescription`,
+            `Price`,
+            `tourimages`, 
+            `numberperson`, 
+            `TourDuration`,
+            `date`,
+            `AdminUserID`,
+            S.tourStatus,
+            ts.site_name,
+            A.TourTypeName
+        FROM 
+            tours T
+        JOIN 
+            tourist_sites ts ON T.tour_site_id = ts.site_id
+        JOIN 
+            tourstatus S ON T.tourStat_id = S.tourstat_id
+        JOIN 
+            tourtypes A ON T.tourtype_id = A.TourTypeID
+        WHERE 
+            T.tourtype_id = ?"; // Placeholder for dynamic binding
 
 // Initialize statement
 $stmt = $conn->prepare($sql);
 
-// Bind the parameter (replace 1 with your desired tourservices_id)
-$tourservices_id = 1; // Example ID
-$stmt->bind_param("i", $tourservices_id);
+// Bind the parameter (replace 10 with your desired tourtype_id)
+$tourtype_id = 7; // Example dynamic value
+$stmt->bind_param("i", $tourtype_id);  // 'i' denotes integer type
 
 // Execute the query
 $stmt->execute();
@@ -36,10 +40,9 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 // Fetch the data
+$tours = [];
 if ($result->num_rows > 0) {
     $tours = $result->fetch_all(MYSQLI_ASSOC);
-} else {
-    $tours = [];
 }
 
 // Close the statement and connection
@@ -49,4 +52,3 @@ $conn->close();
 // Return JSON response
 header('Content-Type: application/json');
 echo json_encode($tours);
-?>

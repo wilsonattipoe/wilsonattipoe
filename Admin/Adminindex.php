@@ -17,9 +17,9 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
 
     // Only allow access if the user is an Admin and has an active status
     if ($roleID == 1 && $statusID == 1) {
-   
+
         if (!isset($_SESSION['welcome_message_shown'])) {
-            $_SESSION['welcome_message_shown'] = true; 
+            $_SESSION['welcome_message_shown'] = true;
             displayMessage('Welcome ' . $username, 'You have successfully logged in', 'success');
         }
 
@@ -29,17 +29,18 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
             'Total booktours' => "SELECT COUNT(bookTour_ID) AS count FROM booktours",
         );
 
-                    // Query to get total price
-            $sql = "SELECT SUM(price) AS total_price FROM booktours";
-            $result = $conn->query($sql);
+        // Query to get total price
+        $sql = "SELECT sum(bookPrice) as total_price FROM `booktours` B
+                            join tours T on B.tour_id = T.TourID";
+        $result = $conn->query($sql);
 
-            if ($result->num_rows > 0) {
-                // Fetch the result
-                $row = $result->fetch_assoc();
-                $total_price = $row['total_price'];
-            } else {
-                $total_price = 0;
-            }
+        if ($result->num_rows > 0) {
+            // Fetch the result
+            $row = $result->fetch_assoc();
+            $total_price = $row['total_price'];
+        } else {
+            $total_price = 0;
+        }
 
         // Execute queries and store counts
         $counts = array();
@@ -95,14 +96,13 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
     .card-metric-purple {
         background-color: #32012F;
     }
- 
 </style>
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h6 class="h2 mb-0 text-gray-600">Welcome,<?php echo $username; ?>,to the Admin Dashboard!</h6>
+        <h6 class="h2 mb-0 text-gray-600">Welcome,<?php echo $username; ?>,to the Admin Dashboard!</h6>
     </div>
 
     <!-- Content Row -->
@@ -114,9 +114,9 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
                 <div class="card-body">
                     <div class="row no-gutters align-items-center ">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-users fa-sm text-white-100" style="color: white; ">&nbsp;<?php echo $counts ["Total client"]; ?>
-                        </i></h2>
-                        <span><i class="fa fa-arrow-up" style="color:white;">Client users</i> </span>
+                            <h2><i class="fas fa-users fa-sm text-white-100" style="color: white; ">&nbsp;<?php echo $counts["Total client"]; ?>
+                                </i></h2>
+                            <span><i class="fa fa-arrow-up" style="color:white;">Client users</i> </span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-users fa-2x text-gray-300 "></i>
@@ -126,22 +126,22 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
             </div>
         </div>
 
-      <!-- Revenue Card -->
-<div class="col-xl-3 col-md-6 mb-4">
-    <div class="card card-metric-purple shadow h-100 py-2">
-        <div class="card-body">
-            <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                    <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp; <?php echo number_format($total_price, 2); ?></i></h2>
-                    <span><i class="fa fa-arrow-up text-white-100" style="color:white;"> Revenue income</i></span>
-                </div>
-                <div class="col-auto">
-                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+        <!-- Revenue Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-metric-purple shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp; <?php echo number_format($total_price, 2); ?></i></h2>
+                            <span><i class="fa fa-arrow-up text-white-100" style="color:white;"> Revenue income</i></span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
         <!-- Bookings Card -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -149,8 +149,8 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp; <?php echo $counts ['Total booktours']; ?></i></h2>
-                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;">Bookings</i></span>
+                            <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp; <?php echo $counts['Total booktours']; ?></i></h2>
+                            <span><i class="fa fa-arrow-up text-white-100" style="color:white;">Bookings</i></span>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -166,11 +166,11 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                        <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp;3</i></h2>
-                        <span><i class="fa fa-arrow-up text-white-100"  style="color:white;">User Feedbacks</i></span>
+                            <h2><i class="fas fa-money-check-alt fa-sm text-white-100" style="color:white;">&nbsp;3</i></h2>
+                            <span><i class="fa fa-arrow-up text-white-100" style="color:white;">User Feedbacks</i></span>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"  style="color:white;"></i>
+                            <i class="fas fa-comments fa-2x text-gray-300" style="color:white;"></i>
                         </div>
                     </div>
                 </div>
@@ -183,13 +183,9 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
 
 
 
-            <!-- Booking chart included here Eli -->
-            <?php
-            include "../Supervisor/chart.php";
-            ?>
 
-  <!-- Recent Bookings Table -->
-  <div class="col-xl-4 col-lg-5">
+    <!-- Recent Bookings Table -->
+    <div class="">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
@@ -199,10 +195,16 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>Customer</th>
-                                <th>Contact</th>
-                                <th>Amount</th>
+                                <th>Client Name</th>
+                                <th>Tour Name</th>
                                 <th>Tour Type</th>
+                                <th>Amount ($)</th>
+                                <th>Participants</th>
+                                <th>Total left</th>
+                                <th>start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+
                             </tr>
                         </thead>
                         <tbody id="bookingTableBody">
@@ -219,18 +221,35 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
     <script>
         $(document).ready(function() {
             $.ajax({
-                url: './fetch_recent_bookings.php', 
+                url: './fetch_recent_bookings.php',
                 method: 'GET',
                 dataType: 'json',
                 success: function(data) {
                     if (Array.isArray(data)) {
                         var rows = '';
                         data.forEach(function(booking) {
+                            var actionClass = ''; // For the dynamic badge class
+
+                            // Assign the correct class based on ActionName
+                            if (booking.ActionName === 'Pending') {
+                                actionClass = 'badge-warning';
+                            } else if (booking.ActionName === 'Ongoing') {
+                                actionClass = 'badge-primary';
+                            } else if (booking.ActionName === 'Rejected') {
+                                actionClass = 'badge-danger';
+                            }
+
+                            // Create table row with dynamic content and classes
                             rows += '<tr>' +
-                                '<td>' + booking.customerName + '</td>' +
-                                '<td>' + booking.customerContact + '</td>' +
-                                '<td>$' + booking.amount + '</td>' +
-                                '<td>' + booking.tourType + '</td>' +
+                                '<td>' + booking.Username + '</td>' +
+                                '<td>' + booking.TourName + '</td>' +
+                                '<td>' + booking.TourTypeName + '</td>' +
+                                '<td>$' + booking.bookPrice + '</td>' +
+                                '<td>' + booking.participants + '</td>' +
+                                '<td>' + booking.total_left + '</td>' +
+                                '<td>' + booking.start_date + '</td>' +
+                                '<td>' + booking.end_date + '</td>' +
+                                '<td><span class="badge ' + actionClass + '">' + booking.ActionName + '</span></td>' +
                                 '</tr>';
                         });
                         $('#bookingTableBody').html(rows);
@@ -245,8 +264,8 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
         });
     </script>
 
-       
-<?php
-include("./include/footer.php");
-?>
 
+
+    <?php
+    include("./include/footer.php");
+    ?>

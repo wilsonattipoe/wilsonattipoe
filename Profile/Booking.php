@@ -11,42 +11,19 @@ if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
     $username = ucwords($_SESSION['Username']);
     $userID = $_SESSION['ClientUserID'];
 } else {
-    displayMessage('Error', 'Session not set.', 'error', '/logout.php');
     header("Location: /logout.php");
     exit();
 }
 
-// Query to fetch all current bookings for the logged-in user
-$sql_current = "SELECT 	
-        bt.ClientUserID,
-        bt.bookTour_ID,
-        bt.price,
-        bt.ClientUserID,
-        bt.room_id,
-        bt.participants,
-        a.ActionName AS action_status,
-        bt.country_id,
-        bt.tourType_id,
-        bt.tourSite_id,
-        bt.status,
-        bt.Dated,
-        tt.TourTypeName,
-        r.Rooms_Name,
-        c.country_name
-    FROM 
-        booktours bt
-    JOIN 
-        tourtypes tt ON bt.tourType_id = tt.TourTypeID
-    JOIN
-        room r ON bt.room_id = r.Room_id
-    JOIN
-        countries c ON bt.country_id = c.country_id
-    JOIN
-        actions a ON bt.action_id = a.ActionID
-    WHERE
-        a.ActionName IN ('Pending', 'Ongoing', 'Completed') 
-    AND 
-        bt.ClientUserID = ?"; 
+// Fetch current bookings
+$sql_current = "SELECT C.ClientUserID,C.Username,T.TourName,T.Price,S.TourTypeName,B.participants,
+                SUM(T.numberperson - B.participants) total_left, A.ActionName,T.end_date,T.start_date 
+                FROM `booktours` B
+                JOIN tours T ON B.tour_id = T.TourID
+                JOIN clientusers C ON B.ClientUserID = C.ClientUserID
+                JOIN tourtypes S ON T.tourtype_id = S.TourTypeID
+                JOIN actions A ON B.action_id = A.ActionID
+                WHERE C.ClientUserID = ? AND T.end_date > CURDATE()";
 
 $stmt_current = $conn->prepare($sql_current);
 $stmt_current->bind_param('i', $userID);
@@ -55,41 +32,20 @@ $result_current = $stmt_current->get_result();
 
 $bookings_current = [];
 if ($result_current->num_rows > 0) {
-    while($row = $result_current->fetch_assoc()) {
+    while ($row = $result_current->fetch_assoc()) {
         $bookings_current[] = $row;
     }
 }
 
-// Query to fetch existing bookings with status 'Rejected' or 'Ended' for the logged-in user
-$sql_existing = "SELECT 
-        bt.bookTour_ID,
-        bt.price,
-        bt.ClientUserID,
-        bt.room_id,
-        bt.participants,
-        a.ActionName AS action_status,
-        bt.country_id,
-        bt.tourType_id,
-        bt.tourSite_id,
-        bt.action_id,
-        bt.Dated,
-        tt.TourTypeName,
-        r.Rooms_Name,
-        c.country_name
-    FROM 
-        booktours bt
-    JOIN 
-        tourtypes tt ON bt.tourType_id = tt.TourTypeID
-    JOIN
-        room r ON bt.room_id = r.Room_id
-    JOIN
-        countries c ON bt.country_id = c.country_id
-    JOIN
-        actions a ON bt.action_id = a.ActionID
-    WHERE
-        a.ActionName IN ('Rejected', 'Ended')
-    AND 
-        bt.ClientUserID = ?"; 
+// Fetch existing bookings (rejected or ended)
+$sql_existing = "SELECT C.ClientUserID,C.Username,T.TourName,T.Price,S.TourTypeName,B.participants,
+                SUM(T.numberperson - B.participants) total_left, A.ActionName,T.end_date,T.start_date 
+                FROM `booktours` B
+                JOIN tours T ON B.tour_id = T.TourID
+                JOIN clientusers C ON B.ClientUserID = C.ClientUserID
+                JOIN tourtypes S ON T.tourtype_id = S.TourTypeID
+                JOIN actions A ON B.action_id = A.ActionID
+                WHERE C.ClientUserID = ? AND A.ActionName = 'rejected'";
 
 $stmt_existing = $conn->prepare($sql_existing);
 $stmt_existing->bind_param('i', $userID);
@@ -98,14 +54,13 @@ $result_existing = $stmt_existing->get_result();
 
 $bookings_existing = [];
 if ($result_existing->num_rows > 0) {
-    while($row = $result_existing->fetch_assoc()) {
+    while ($row = $result_existing->fetch_assoc()) {
         $bookings_existing[] = $row;
     }
 }
+
 $conn->close();
 ?>
-
-
 
 <div id="booking" class="content-section" style="margin: 15px;">
     <h1 class="text-center">Booking</h1>
@@ -113,14 +68,10 @@ $conn->close();
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div id="tour-container" class="row">
+            <!-- Tour details will be loaded here -->
         </div>
     </div>
 </div>
-
-
-
-
-
 
 <!-- Booking Modal -->
 <div class="modal fade" id="BookModel" tabindex="-1" role="dialog" aria-labelledby="BookModelLabel" aria-hidden="true">
@@ -143,35 +94,11 @@ $conn->close();
                         <label for="participants">Number of Participants</label>
                         <input type="number" class="form-control" id="participants" name="participants" min="1">
                     </div>
-                    <div class="form-group">
-                        <label for="roomSelect">Select Room</label>
-                        <select class="form-control" id="roomSelect" name="roomSelect">
-                            <!-- Room options will be populated here -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="countrySelect">Select Country</label>
-                        <select class="form-control" id="countrySelect" name="countrySelect">
-                            <!-- Country options will be populated here -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="tourTypeSelect">Select Tour Type</label>
-                        <select class="form-control" id="tourTypeSelect" name="tourTypeSelect">
-                            <!-- Tour Type options will be populated here -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="tourSiteSelect">Select Tour Site</label>
-                        <select class="form-control" id="tourSiteSelect" name="tourSiteSelect">
-                            <!-- Tour Site options will be populated here -->
-                        </select>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="bookTour()">Book Tour</button>
+                <button type="button" class="btn btn-primary" onclick="BookTour()">Book Tour</button>
             </div>
         </div>
     </div>
@@ -231,441 +158,212 @@ $conn->close();
     </div>
 </div>
 
-<h1 style="text-align: center;margin-top:20px;">Book Tours</h1>
+
 <!-- Current Bookings -->
 <h3 class="mt-5" style="color:green;">Current Bookings</h3>
 <div class="table-responsive">
-  <table class="table table-bordered table-striped">
-    <thead>
-      <tr>
-        <th>Tour Name</th>
-        <th>Amount GHC</th>
-        <th>Room</th>
-        <th>Date</th>
-        <th>Tour Status</th>
-        <th>Participants</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ($bookings_current as $booking): ?>
-        <tr>
-          <td><?php echo htmlspecialchars($booking['TourTypeName']); ?></td>
-          <td><?php echo htmlspecialchars($booking['price']); ?></td>
-          <td><?php echo htmlspecialchars($booking['Rooms_Name']); ?></td>
-          <td><?php echo htmlspecialchars($booking['Dated']); ?></td>
-          <td><?php echo htmlspecialchars($booking['action_status']); ?></td>
-          <td><?php echo htmlspecialchars($booking['participants']); ?></td>
-          <td>
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#CancellationModal" data-booking-id="<?php echo $booking['bookTour_ID']; ?>">Request Cancellation</button>
-          </td>
-        </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
+    <table class=" table table-bordered table-striped" id="currentBookingsTable">
+        <thead>
+            <tr>
+                <th>Tour Name</th>
+                <th>Tour Type</th>
+                <th>Amount</th>
+                <th>booked for</th>
+                <th>start date</th>
+                <th>end date</th>
+                <th>status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="7" class="text-center">Loading...</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- Existing Bookings -->
 <h3 class="mt-5" style="color:red;">Existing Bookings</h3>
 <div class="table-responsive">
-  <table class="table table-bordered table-striped">
-    <thead>
-      <tr>
-        <th>Tour Name</th>
-        <th>Amount GHC</th>
-        <th>Room</th>
-        <th>Date</th>
-        <th>Tour Status</th>
-        <th>Participants</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ($bookings_existing as $booking): ?>
-        <tr>
-          <td><?php echo htmlspecialchars($booking['TourTypeName']); ?></td>
-          <td><?php echo htmlspecialchars($booking['price']); ?></td>
-          <td><?php echo htmlspecialchars($booking['Rooms_Name']); ?></td>
-          <td><?php echo htmlspecialchars($booking['Dated']); ?></td>
-          <td><?php echo htmlspecialchars($booking['action_status']); ?></td>
-          <td><?php echo htmlspecialchars($booking['participants']); ?></td>
-          <td>
-            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#RetrievalModal" data-booking-id="<?php echo $booking['bookTour_ID']; ?>">Request Retrieval</button>
-          </td>
-        </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
+    <table class="table table-bordered table-striped" id="existingBookingsTable">
+        <thead>
+            <tr>
+                <th>Tour Name</th>
+                <th>Tour Type</th>
+                <th>Amount</th>
+                <th>booked for</th>
+                <th>start date</th>
+                <th>end date</th>
+                <th>status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="8" class="text-center">Loading...</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
-
-
-
-<!-- Add to Cart Modal -->
-<div id="AddCart" class="modal fade" style="z-index:1500">
-    <div class="modal-dialog">
-        <div class="modal-content" id="cont">
-            <div class="modal-header">
-                <h4 class="modal-title">Add to Cart</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to add this tour to your cart?</p>
-                <form id="addToCartForm">
-                    <div class="form-group">
-                        <input type="hidden" id="cart_id"> <!-- Hidden input for tour ID -->
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <input type="button" class="btn btn-outline-success w-20" data-dismiss="modal" value="Close">
-                <input type="button" class="btn btn-outline-danger" onclick="AddCart()" value="Add to Cart">
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
 
 <script>
-function BookTour() {
-    var id = $('#tourID').val();
-    var userID = <?php echo json_encode($userID); ?>;
-    var date = $('#bookingDate').val();
-    var participants = $('#participants').val();
+    function loadBookings(type, tableID) {
+        // Send AJAX request
+        fetch(`fetch_bookings.php?type=${type}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector(`#${tableID} tbody`);
+                tableBody.innerHTML = ''; // Clear the table body
 
-
-    // Fetch Booking Functions
-    $.ajax({
-        type: 'post',
-        url: 'fetch_book.php',
-        data: {
-            id: id,
-            userID: userID,
-            date: date,
-            participants: participants
-        },
-        success: function(data) {
-            var response = JSON.parse(data);
-
-            Swal.fire({
-                title: response.success ? 'Success' : 'Error',
-                text: response.message,
-                icon: response.success ? 'success' : 'error',
-                confirmButtonText: 'OK',
-                customClass: {
-                    container: 'swal-custom-container',
-                },
-            }).then(function() {
-                if (response.success) {
-                    location.reload();
-                    $('#BookModel').modal('hide');
-                }
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-            Swal.fire({
-                title: 'Error',
-                text: 'An error occurred while processing your request.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    });
-}
-
-
-
-// Add to cart Functions
-function AddCart() {
-    var id = $('#cart_id').val();
-    var userID = <?php echo json_encode($userID); ?>;
-    var quantity = $('#cartQuantity').val();
-
-    $.ajax({
-        type: 'post',
-        url: 'fetch_Cart.php',
-        data: {
-            userID: userID,
-            quantity: quantity
-        },
-        success: function(data) {
-            var response = JSON.parse(data);
-
-            Swal.fire({
-                title: response.success ? 'Added to cart successfully' : 'Error',
-                text: response.message,
-                icon: response.success ? 'success' : 'error',
-                confirmButtonText: 'OK',
-                customClass: {
-                    container: 'swal-custom-container',
-                },
-            }).then(function() {
-                if (response.success) {
-                  
-                    $('#AddCart').modal('hide');
-                    location.reload();
-                }
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-            Swal.fire({
-                title: 'Error',
-                text: 'An error occurred while processing your request.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    });
-}
-
-
-
-
-// Load Populated Tour by the system Admins
-function loadTours() {
-    $.ajax({
-        url: 'fetch_tours.php',
-        type: 'get',
-        dataType: 'json',
-        success: function(response) {
-            $.each(response, function(index, tour) {
-                var tourHtml = `
-                <div class="col-md-4 mb-4">
-                    <div class="tour-card">
-                        <img src="../uploads/${tour['tourimages']}" class="card-img-top" alt="${tour['TourName']}">
-                        <div class="card-body">
-                            <h5 class="card-title">${tour['TourName']}</h5>
-                            <p class="card-text">${tour['tourdescription']}</p>
-                            <p class="card-text">Date: ${new Date(tour['date']).toLocaleDateString()}</p>
-                            <div class="text-right">
-                                <button class="btn btn-primary btn-sm" onclick="$('#cart_id').val(${tour['tourID']}); $('#AddCart').modal('show');">
-                                    <i class="fas fa-cart-plus"></i> Add to Cart
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="$('#tourID').val(${tour['tourID']}); $('#BookModel').modal('show');">
-                                    <i class="fas fa-book"></i> Book Now
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-                $('#tour-container').append(tourHtml);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-        }
-    });
-}
-
-$(document).ready(function() {
-    loadTours();
-});
-
-
-
-
-$(document).ready(function() {
-    // Populate countries in the modal when it is shown
-    $('#BookModel').on('show.bs.modal', function () {
-        // Fetch rooms
-        $.ajax({
-            url: 'fetch_rooms.php', 
-            type: 'GET',
-            success: function(data) {
-                try {
-                    var rooms = JSON.parse(data);
-                    var roomSelect = $('#roomSelect');
-                    roomSelect.empty();
-                    roomSelect.append('<option value="">None</option>');
-                    rooms.forEach(function(room) {
-                        roomSelect.append('<option value="' + room.Room_id + '">' + room.Rooms_Name + '</option>');
-                    });
-                } catch (e) {
-                    Swal.fire('Error', 'Failed to parse room data', 'error');
-                }
-            },
-            error: function() {
-                Swal.fire('Error', 'Unable to load room options', 'error');
-            }
-        });
-
-
-
-        
-        // Fetch countries
-        $.ajax({
-            url: 'fetch_countries.php',
-            type: 'GET',
-            success: function(data) {
-                try {
-                    var countries = JSON.parse(data);
-                    var countrySelect = $('#countrySelect');
-                    countrySelect.empty();
-                    countrySelect.append('<option value="">Select Country</option>');
-                    countries.forEach(function(country) {
-                        countrySelect.append('<option value="' + country.country_id + '">' + country.country_name + '</option>');
-                    });
-                } catch (e) {
-                    Swal.fire('Error', 'Failed to parse country data', 'error');
-                }
-            },
-            error: function() {
-                Swal.fire('Error', 'Unable to load country options', 'error');
-            }
-        });
-    });
-});
-
-  // Fetch and populate tour types
-  $.ajax({
-        url: 'fetch_tour_types.php', 
-        type: 'GET',
-        success: function(response) {
-            let tourTypes = JSON.parse(response);
-            let tourTypeSelect = $('#tourTypeSelect');
-            tourTypeSelect.empty();
-            $.each(tourTypes, function(index, type) {
-                tourTypeSelect.append(`<option value="${type.id}">${type.name}</option>`);
-            });
-        }
-    });
-
-
-
-    function bookTour() {
-    var formData = $('#bookingForm').serialize(); 
-
-    $.ajax({
-        url: 'book_tour.php', 
-        type: 'POST',
-        data: formData,
-        success: function(response) {
-            try {
-                var result = JSON.parse(response);
-                if (result.success) {
-                    Swal.fire('Success', 'Your tour has been booked successfully!', 'success')
-                    .then(() => {
-                        $('#BookModel').modal('hide'); 
-                        location.reload(); 
+                if (data.status === 'success' && data.data.length > 0) {
+                    // Populate table rows
+                    data.data.forEach(booking => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>${booking.TourName}</td>
+                        <td>${booking.TourTypeName}</td>
+                        <td>${booking.bookPrice}</td>
+                        <td>${booking.participants}</td>
+                        <td>${booking.start_date}</td>
+                        <td>${booking.end_date}</td>
+                        <td>${booking.ActionName}</td>
+                        <td>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#CancellationModal">Request Cancellation</button>
+                        </td>
+                    `;
+                        tableBody.appendChild(row);
                     });
                 } else {
-                    Swal.fire('Error', 'Booking failed: ' + result.message, 'error');
+                    // No data found
+                    const noDataRow = document.createElement('tr');
+                    noDataRow.innerHTML = `<td colspan="7" class="text-center">No data available</td>`;
+                    tableBody.appendChild(noDataRow);
                 }
-            } catch (e) {
-                Swal.fire('Error', 'Failed to parse booking response', 'error');
-            }
-        },
-        error: function() {
-            Swal.fire('Error', 'An error occurred while processing your booking.', 'error');
-        }
-    });
-}
-
-
-
-// Fetch and populate tour sites based on selected country
-$('#countrySelect').change(function() {
-    let countryId = $(this).val();
-    $.ajax({
-        url: 'fetch_tour_sites.php', 
-        type: 'POST',
-        data: { country_id: countryId },
-        success: function(response) {
-            let tourSites = JSON.parse(response);
-            let tourSiteSelect = $('#tourSiteSelect');
-            tourSiteSelect.empty(); // Clear existing options
-            $.each(tourSites, function(index, site) {
-                tourSiteSelect.append(`<option value="${site.site_id}">${site.site_name}</option>`);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                const tableBody = document.querySelector(`#${tableID} tbody`);
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center">Failed to load data</td></tr>`;
             });
-        },
-        error: function() {
-            console.error('Failed to fetch tour sites.');
-        }
-    });
-});
+    }
 
+    // Load bookings when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBookings('current', 'currentBookingsTable'); // Fetch current bookings
+        loadBookings('existing', 'existingBookingsTable'); // Fetch existing bookings
+    });
 </script>
 
+<script>
+    function BookTour() {
+        var tourID = $('#tourID').val();
+        var bookingDate = $('#bookingDate').val();
+        var participants = $('#participants').val();
 
+        if (bookingDate === '' || participants === '') {
+            Swal.fire('Error', 'All fields are required', 'error');
+            return;
+        }
 
+        $.ajax({
+            url: 'book_tour.php',
+            method: 'POST',
+            data: {
+                tourID: tourID,
+                bookingDate: bookingDate,
+                participants: participants
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire('Success', response.message, 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+                Swal.fire('Error', 'An error occurred while processing your request', 'error');
+            }
+        });
+    }
 
+    function submitCancellation() {
+        var tourID = $('#cancelTourID').val();
+        var reason = $('#cancellationReason').val();
 
+        if (reason === '') {
+            Swal.fire('Error', 'Reason for cancellation is required', 'error');
+            return;
+        }
 
+        $.ajax({
+            url: 'cancel_tour.php',
+            method: 'POST',
+            data: {
+                tourID: tourID,
+                reason: reason
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire('Success', response.message, 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+                Swal.fire('Error', 'An error occurred while processing your request', 'error');
+            }
+        });
+    }
 
+    function submitRetrieval() {
+        var tourID = $('#retrieveTourID').val();
+        var reason = $('#retrievalReason').val();
 
+        if (reason === '') {
+            Swal.fire('Error', 'Reason for retrieval is required', 'error');
+            return;
+        }
 
-
-
-
-
-
-
-
-
-
-
+        $.ajax({
+            url: 'retrieve_tour.php',
+            method: 'POST',
+            data: {
+                tourID: tourID,
+                reason: reason
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire('Success', response.message, 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+                Swal.fire('Error', 'An error occurred while processing your request', 'error');
+            }
+        });
+    }
+</script>
 <style>
-.tour-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 370px; /* Adjust height as needed */
-}
-
-.tour-card img.card-img-top {
-    width: 100%;
-    height: 150px; 
-    object-fit: cover;
-}
-
-.tour-card .card-body {
-    padding: 15px;
-    flex: 1;
-}
-
-.tour-card .card-title {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-.tour-card .card-text {
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-.text-right {
-    margin-top: auto;
-    text-align: right;
-}
-
-.btn-sm {
-    font-size: 12px;
-    padding: 5px 10px;
-}
+    .table-responsive {
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 20px;
+    }
 </style>
-
-
-<?php include('../Profile/include/footer.php'); ?>
-
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-

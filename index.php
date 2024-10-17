@@ -7,8 +7,13 @@ include("./include/header.php");
 include("./Database/connect.php");
 include ('./config.php');      
 
-$isLoggedIn = isset($_SESSION['ClientUserID']);
 
+$username = null;
+$isLoggedIn = null;
+if (isset($_SESSION['Username']) && isset($_SESSION['ClientUserID'])) {
+    $username = ucwords($_SESSION['Username']);
+    $isLoggedIn = isset($_SESSION['ClientUserID']);
+}
 // Fetch tour data from the add_tour.php
 $sql = "SELECT 
     t.TourName, 
@@ -318,33 +323,68 @@ $conn->close();
                                     <i class="fa <?php echo $iconClass; ?> me-2"></i>
                                     <?php echo htmlspecialchars($tour['tourStatus']); ?> Status
                                 </small>
-
                             </div>
                             <div class="text-center p-4">
                                 <h3 class="mb-0">$<?php echo number_format($tour['Price'], 2); ?></h3>
                                 <div class="mb-3">
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                </div>
-                                <p><?php echo htmlspecialchars($tour['tourdescription']); ?></p>
-                                <div class="d-flex justify-content-center mb-2">
-                                    <button class="btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" data-session="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" onclick="checkLogin('/booking.php')">Book Now</button>
-                                </div>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                    </div>
+                                    <p><?php echo htmlspecialchars($tour['tourdescription']); ?></p>
+                                <?php if ($isLoggedIn): ?> <!-- Only show button if user is logged in -->
+                                    <button class="btn btn-primary" onclick="payWithPaystack(<?php echo $tour['Price']; ?>, '<?php echo htmlspecialchars($tour['TourName']); ?>', <?php echo isset($isLoggedIn) ? $isLoggedIn : 'null'; ?>, <?php echo htmlspecialchars($tour['numberperson']); ?>)">Book Now</button>
+                                <?php else: ?>
+                                    <button class="btn btn-secondary" disabled>Please log in to book</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <p>No tours available at the moment.</p>
             <?php endif; ?>
         </div>
     </div>
 </div>
-<!-- Package End -->
 
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+function payWithPaystack(amount, tourID, userID, participant) {
+    var handler = PaystackPop.setup({
+        key: 'pk_test_0555ba168ad5111f5d77d6c940c94437895d3b68', 
+        email: 'customer@example.com', 
+        amount: amount * 100, // Amount in kobo
+        currency: 'GHS',
+        ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function(response) {
+            alert('Payment successful. Transaction reference: ' + response.reference);
+
+            // AJAX request to save booking
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "./store_booking.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const result = JSON.parse(xhr.responseText);
+                    if (result.success) {
+                        alert(result.message); // Show success message
+                    } else {
+                        alert(result.error); // Show error message
+                    }
+                }
+            };
+
+            // Sending the data to the server
+            xhr.send(`id=${tourID}&userID=${userID}&participant=${participant}&price=${amount}`);
+        },
+        onClose: function() {
+            alert('Payment window closed.');
+        }
+    });
+    handler.openIframe();
+}
+</script>
 
 
 <!-- Login Prompt Modal -->

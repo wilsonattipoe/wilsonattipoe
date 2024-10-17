@@ -7,14 +7,16 @@ include('../Supervisor/Database/connect.php');
 
 // Fetch data from the tables
 $sql = "SELECT t.TourTypeName, COUNT(bt.bookTour_ID) AS totalBookings, 
-            COUNT(CASE WHEN bt.status = 'canceled' THEN 1 END) AS totalBookCancel, 
-            COUNT(DISTINCT bt.tourSite_id) AS totalTourSites,
+            COUNT(CASE WHEN A.ActionName = 'Rejected' THEN 1 END) AS totalBookCancel, 
+            COUNT(DISTINCT bt.tour_id) AS totalTourSites,
             (SELECT COUNT(cart_id) FROM addcart) AS totalAddToCart, 
-            COUNT(DISTINCT bt.tourType_id) AS totalTourTypeVisited, 
+            COUNT(DISTINCT S.tourtype_id) AS totalTourTypeVisited, 
             (SELECT COUNT(Request_id) FROM request) AS totalRequest, 
             (SELECT COUNT(FeedbackID) FROM feedback) AS totalFeedbacks
         FROM booktours bt 
-        JOIN tourtypes t ON bt.tourType_id = t.TourTypeID 
+        JOIN tours S on bt.tour_id = S.TourID
+        JOIN tourtypes t ON S.tourtype_id = t.TourTypeID 
+        join actions A on bt.action_id = A.ActionID
         GROUP BY t.TourTypeName";
 
 $result = $conn->query($sql);

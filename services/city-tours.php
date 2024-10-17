@@ -10,7 +10,7 @@ $isLoggedIn = isset($_SESSION['ClientUserID']);
 $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
 ?>
 <div id="booking" class="content-section" style="margin: 15px;">
-    <h1 class="text-center">City tour</h1> 
+    <h1 class="text-center">City tour</h1>
 </div>
 <div class="row justify-content-center">
     <div class="col-lg-10">
@@ -100,7 +100,10 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
             $.ajax({
                 type: 'post',
                 url: './fetch_city.php',
-                data: { id: id, userID: userID },
+                data: {
+                    id: id,
+                    userID: userID
+                },
                 success: function(data) {
                     var response = JSON.parse(data);
 
@@ -109,7 +112,9 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
                         text: response.message,
                         icon: response.success ? 'success' : 'error',
                         confirmButtonText: 'OK',
-                        customClass: { container: 'swal-custom-container' },
+                        customClass: {
+                            container: 'swal-custom-container'
+                        },
                     }).then(function() {
                         if (response.success) {
                             location.reload();
@@ -138,7 +143,11 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
         $.ajax({
             type: 'post',
             url: 'fetch_Cart.php',
-            data: { userID: userID, quantity: quantity },
+            data: {
+                userID: userID,
+                quantity: quantity,
+                id: id
+            },
             success: function(data) {
                 var response = JSON.parse(data);
                 Swal.fire({
@@ -146,7 +155,9 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
                     text: response.message,
                     icon: response.success ? 'success' : 'error',
                     confirmButtonText: 'OK',
-                    customClass: { container: 'swal-custom-container' },
+                    customClass: {
+                        container: 'swal-custom-container'
+                    },
                 }).then(function() {
                     if (response.success) {
                         location.reload();
@@ -244,66 +255,67 @@ $ClientUserID = $isLoggedIn ? $_SESSION['ClientUserID'] : null;
 
 <style>
     /* Container for the grid */
-.tour-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px; /* Space between cards */
-    padding: 20px;
-    flex-direction: row;
-}
+    .tour-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        /* Space between cards */
+        padding: 20px;
+        flex-direction: row;
+    }
 
-/* Card styling */
-.status-ongoing {
-    color: green !important;
-    font-weight: bold;
-}
+    /* Card styling */
+    .status-ongoing {
+        color: green !important;
+        font-weight: bold;
+    }
 
-.status-ended {
-    color: red !important;
-    font-weight: bold;
-}
+    .status-ended {
+        color: red !important;
+        font-weight: bold;
+    }
 
-.status-pending {
-    color: orange !important;
-    font-weight: bold;
-}
+    .status-pending {
+        color: orange !important;
+        font-weight: bold;
+    }
 
-.tour-card {
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-}
+    .tour-card {
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
 
-/* Ensure the image fits the card */
-.tour-card img {
-    height: 260px;
-    width: 100%;
-    object-fit: cover;
-    flex-direction: column;
-    display: inline-flex;
-}
+    /* Ensure the image fits the card */
+    .tour-card img {
+        height: 260px;
+        width: 100%;
+        object-fit: cover;
+        flex-direction: column;
+        display: inline-flex;
+    }
 
-/* Card body content styling */
-.tour-card .card-body {
-    padding: 15px;
-    flex: 1;
-}
+    /* Card body content styling */
+    .tour-card .card-body {
+        padding: 15px;
+        flex: 1;
+    }
 
-/* Align text and button */
-.tour-card .text-right {
-    margin-top: auto; /* Pushes buttons to the bottom of the card */
-}
+    /* Align text and button */
+    .tour-card .text-right {
+        margin-top: auto;
+        /* Pushes buttons to the bottom of the card */
+    }
 
-/* Button styling */
-.tour-card button {
-    margin-left: 5px;
-}
-
+    /* Button styling */
+    .tour-card button {
+        margin-left: 5px;
+    }
 </style>
 
 <!-- Bootstrap JS and dependencies -->

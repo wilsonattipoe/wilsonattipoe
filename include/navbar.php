@@ -1,18 +1,19 @@
 <?php
 session_start();
 ?>
+
 <style>
-  .cookie-consent {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #343a40;
-    color: #ffffff;
-    padding: 20px;
-    display: none;
-    z-index: 1000;
-  }
+    .cookie-consent {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #343a40;
+        color: #ffffff;
+        padding: 20px;
+        display: none;
+        z-index: 1000;
+    }
 </style>
 
 <!-- Spinner Start -->
@@ -50,6 +51,7 @@ session_start();
             <div class="navbar-nav ms-auto py-0 align-items-center">
                 <a href="index.php" class="nav-item nav-link active">Home</a>
                 <a href="about.php" class="nav-item nav-link">About</a>
+                <a href="Tours.php" class="nav-item nav-link">Tours</a>
                 <a href="service.php" class="nav-item nav-link">Services</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
@@ -60,57 +62,57 @@ session_start();
                     </div>
                 </div>
                 <a href="contact.php" class="nav-item nav-link">Contact</a>
-                
+
                 <!-- Conditional Dropdown Menu -->
                 <div class="nav-item dropdown">
-                <div class="nav-item dropdown">
-                <?php if (isset($_SESSION['ClientUserID'])): ?>
-                    <!-- User is logged in -->
-                    <a class="btn custom-dropdown-button dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-user-alt me-2">
-                            <?php echo isset($_SESSION['Username']) ? htmlspecialchars($_SESSION['Username']) : 'User'; ?>
-                        </i>
-                    </a>
-                    <div class="dropdown-menu p-2 shadow" aria-labelledby="dropdownMenuButton" style="border-radius:8%; color:aqua;">
-                        <a class="dropdown-item d-flex align-items-center" href="/Profile/Booking.php">
-                            <i class="fa fa-user me-2"></i>Dashboard
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item d-flex align-items-center" href="../logout.php">
-                            <i class="fa fa-sign-out-alt me-2"></i>Logout
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="/FAQ.php" data-bs-toggle="modal" data-bs-target="#helpModal">
-                            <i class="fa fa-question-circle me-2"></i>Help
-                        </a>
-                    </div>
-                <?php else: ?>
-                    <a class="nav-link dropdown-toggle" 
-                    id="dropdownMenuButton" 
-                    data-bs-toggle="dropdown" 
-                    aria-haspopup="true" 
-                    aria-expanded="false" 
-                    style="color: white; font-size: 16px; padding: 10px; border-radius: 50px; background-color: #343a40; transition: background-color 0.3s ease;">
-                        <i class="fa fa-user-alt me-2" style="color: white;"> guest</i>
-                    </a>
-                    <div class="dropdown-menu"aria-labelledby="dropdownMenuButton" >
-                        <a class="dropdown-item" href="#" style="color: white; font-size: 14px; padding: 10px 20px; text-decoration: none; display: block;">Login</a>
-                        <a class="dropdown-item" href="#" style="color: white; font-size: 14px; padding: 10px 20px; text-decoration: none; display: block;">Sign Up</a>
+                    <div class="nav-item dropdown">
+                        <?php if (isset($_SESSION['ClientUserID'])): ?>
+                            <!-- User is logged in -->
+                            <a class="btn custom-dropdown-button dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user-alt me-2">
+                                    <?php echo isset($_SESSION['Username']) ? htmlspecialchars($_SESSION['Username']) : 'User'; ?>
+                                </i>
+                            </a>
+                            <div class="dropdown-menu p-2 shadow" aria-labelledby="dropdownMenuButton" style="border-radius:8%; color:aqua;">
+                                <a class="dropdown-item d-flex align-items-center" href="/Profile/Booking.php">
+                                    <i class="fa fa-user me-2"></i>Dashboard
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item d-flex align-items-center" href="../logout.php">
+                                    <i class="fa fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="/FAQ.php" data-bs-toggle="modal" data-bs-target="#helpModal">
+                                    <i class="fa fa-question-circle me-2"></i>Help
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <a class="nav-link dropdown-toggle"
+                                id="dropdownMenuButton"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                style="color: white; font-size: 16px; padding: 10px; border-radius: 50px; background-color: #343a40; transition: background-color 0.3s ease;">
+                                <i class="fa fa-user-alt me-2" style="color: white;"> guest</i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" style="color: white; font-size: 14px; padding: 10px 20px; text-decoration: none; display: block;">Login</a>
+                                <a class="dropdown-item" href="#" style="color: white; font-size: 14px; padding: 10px 20px; text-decoration: none; display: block;">Sign Up</a>
+                            </div>
+
+                            <div class="dropdown-menu p-2 shadow" aria-labelledby="dropdownMenuButton" style="border-radius:8%;">
+                                <a class="dropdown-item d-flex align-items-center" href="/signup.php">
+                                    <i class="fa fa-sign-in-alt me-2"></i>Login/Signup
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="/FAQ.php" data-bs-toggle="modal" data-bs-target="#helpModal">
+                                    <i class="fa fa-question-circle me-2"></i>Help
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="dropdown-menu p-2 shadow" aria-labelledby="dropdownMenuButton" style="border-radius:8%;">
-                        <a class="dropdown-item d-flex align-items-center" href="/signup.php">
-                            <i class="fa fa-sign-in-alt me-2"></i>Login/Signup
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="/FAQ.php" data-bs-toggle="modal" data-bs-target="#helpModal">
-                            <i class="fa fa-question-circle me-2"></i>Help
-                        </a>
-                    </div>
-                <?php endif; ?>
+
+                </div>
             </div>
-
-
-            </div>
-        </div>
     </nav>
 
     <!-- Help Modal -->
@@ -156,7 +158,7 @@ session_start();
 
 <script>
     // Hide spinner after page load
-    window.addEventListener('load', function () {
+    window.addEventListener('load', function() {
         var spinner = document.getElementById('spinner');
         spinner.style.display = 'none';
 
@@ -166,7 +168,7 @@ session_start();
     });
 
     // Handle accept cookies button click
-    document.getElementById('acceptCookies').addEventListener('click', function () {
+    document.getElementById('acceptCookies').addEventListener('click', function() {
         var cookieConsent = document.getElementById('cookieConsent');
         cookieConsent.style.display = 'none';
 

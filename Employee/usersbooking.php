@@ -3,21 +3,14 @@ include('include/header.php');
 include('include/navbar.php');
 include("./Database/connect.php");
 
-// SQL query to fetch bookings with client name, tour type, site name, and action status
-$query = "SELECT 
-    bt.bookTour_ID, 
-    bt.price, 
-    cu.FullName AS client_name, 
-    cu.Email AS client_email, 
-    tt.TourTypeName AS tour_type_name, 
-    ts.site_name AS tour_site_name, 
-    bt.Dated, 
-    a.ActionName AS action_status 
-FROM booktours bt
-LEFT JOIN clientusers cu ON bt.ClientUserID = cu.ClientUserID
-LEFT JOIN tourtypes tt ON bt.tourType_id = tt.TourTypeID
-LEFT JOIN tourist_sites ts ON bt.tourSite_id = ts.site_id
-LEFT JOIN actions a ON bt.Action_id = a.ActionID";
+// SQL query to fetch bookings with client name, tour type, and action status
+$query = "SELECT B.bookTour_ID, C.Username, T.TourName, bookPrice, S.TourTypeName, B.participants, 
+                 (T.numberperson - B.participants) as total_left, A.ActionName, T.end_date, T.start_date 
+          FROM `booktours` B
+          JOIN tours T ON B.tour_id = T.TourID
+          JOIN clientusers C ON B.ClientUserID = C.ClientUserID
+          JOIN tourtypes S ON T.tourtype_id = S.TourTypeID
+          JOIN actions A ON B.action_id = A.ActionID";
 
 // Execute the query and store the result
 $result = $conn->query($query);
@@ -29,7 +22,7 @@ if (!$result) {
 // Calculate total amount
 $total_amount = 0;
 while ($row = $result->fetch_assoc()) {
-    $total_amount += $row['price'];
+    $total_amount += $row['bookPrice'];
 }
 
 // Reset the result pointer for table display
@@ -67,10 +60,10 @@ $result->data_seek(0);
                     <thead>
                         <tr>
                             <th>Client Name</th>
+                            <th>Tour Name</th>
                             <th>Tour Type</th>
-                            <th>Tour Site</th>
                             <th>Amount ($)</th>
-                            <th>Booking Date</th>
+                            <th>Participants</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -78,62 +71,54 @@ $result->data_seek(0);
                     <tbody>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row['client_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><?php echo htmlspecialchars($row['tour_type_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><?php echo htmlspecialchars($row['tour_site_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><?php echo htmlspecialchars($row['price'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><?php echo htmlspecialchars($row['Dated'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                <td><?php echo $row['Username']; ?></td>
+                                <td><?php echo $row['TourName']; ?></td>
+                                <td><?php echo $row['TourTypeName']; ?></td>
+                                <td><?php echo $row['bookPrice']; ?></td>
+                                <td><?php echo $row['participants']; ?></td>
                                 <td>
                                     <span class="badge 
-                                        <?php if ($row['action_status'] == 'Pending') echo 'badge-warning'; ?>
-                                        <?php if ($row['action_status'] == 'Ongoing') echo 'badge-primary'; ?>
-                                        <?php if ($row['action_status'] == 'Rejected') echo 'badge-danger'; ?>">
-                                        <?php echo ucfirst(htmlspecialchars($row['action_status'], ENT_QUOTES, 'UTF-8')); ?>
+                                    <?php if ($row['ActionName'] == 'Pending') echo 'badge-warning'; ?>
+                                    <?php if ($row['ActionName'] == 'Ongoing') echo 'badge-primary'; ?>
+                                    <?php if ($row['ActionName'] == 'Rejected') echo 'badge-danger'; ?>">
+                                        <?php echo ucfirst($row['ActionName']); ?>
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#viewModal_<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>">View Details</button>
+                                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#viewModal_<?php echo $row['bookTour_ID']; ?>">View Details</button>
 
-                                    <!-- Email button -->
-                                    <button class="btn btn-primary btn-sm send-email" data-id="<?php echo $row['bookTour_ID']; ?>" data-email="<?php echo $row['client_email']; ?>">Send Email</button>
-
-                                    <?php if ($row['action_status'] === 'Pending'): ?>
-                                        <button class="btn btn-primary btn-sm change-status" 
-                                                data-id="<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                                data-action="ongoing">Start
-                                        </button>
+                                    <?php if ($row['ActionName'] === 'Pending'): ?>
+                                        <button class="btn btn-primary btn-sm change-status" data-id="<?php echo $row['bookTour_ID']; ?>" data-action="ongoing">Start</button>
                                     <?php endif; ?>
 
-                                    <?php if ($row['action_status'] === 'Ongoing'): ?>
-                                        <button class="btn btn-warning btn-sm change-status" 
-                                                data-id="<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                                data-action="Pending">End
-                                        </button>
+                                    <?php if ($row['ActionName'] === 'Ongoing'): ?>
+                                        <button class="btn btn-warning btn-sm change-status" data-id="<?php echo $row['bookTour_ID']; ?>" data-action="pending">End</button>
                                     <?php endif; ?>
 
-                                    <button class="btn btn-danger btn-sm change-status" 
-                                            data-id="<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                            data-action="rejected">Cancel
-                                    </button>
+                                    <?php if ($row['ActionName'] === 'Rejected'): ?>
+                                        <button class="btn btn-success btn-sm change-status" data-id="<?php echo $row['bookTour_ID']; ?>" data-action="pending">Retrieve</button>
+                                    <?php endif; ?>
+
+                                    <button class="btn btn-danger btn-sm change-status" data-id="<?php echo $row['bookTour_ID']; ?>" data-action="rejected">Cancel</button>
                                 </td>
                             </tr>
+
                             <!-- View Modal for Booking Details -->
-                            <div class="modal fade" id="viewModal_<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel_<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true">
+                            <div class="modal fade" id="viewModal_<?php echo $row['bookTour_ID']; ?>" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel_<?php echo $row['bookTour_ID']; ?>" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="viewModalLabel_<?php echo htmlspecialchars($row['bookTour_ID'], ENT_QUOTES, 'UTF-8'); ?>">Booking Details</h5>
+                                            <h5 class="modal-title" id="viewModalLabel_<?php echo $row['bookTour_ID']; ?>">Booking Details</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <p><strong>Client Name:</strong> <?php echo htmlspecialchars($row['client_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <p><strong>Tour Type:</strong> <?php echo htmlspecialchars($row['tour_type_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <p><strong>Tour Site:</strong> <?php echo htmlspecialchars($row['tour_site_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <p><strong>Amount:</strong> <?php echo htmlspecialchars($row['price'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <p><strong>Booking Date:</strong> <?php echo htmlspecialchars($row['Dated'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <p><strong>Status:</strong> <?php echo ucfirst(htmlspecialchars($row['action_status'], ENT_QUOTES, 'UTF-8')); ?></p>
+                                            <p><strong>Client Name:</strong> <?php echo $row['Username']; ?></p>
+                                            <p><strong>Tour Name:</strong> <?php echo $row['TourName']; ?></p>
+                                            <p><strong>Tour Type:</strong> <?php echo $row['TourTypeName']; ?></p>
+                                            <p><strong>Amount:</strong> $<?php echo number_format($row['bookPrice'], 2); ?></p>
+                                            <p><strong>Status:</strong> <?php echo ucfirst($row['ActionName']); ?></p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -154,104 +139,92 @@ include('include/footer.php');
 include('include/script.php');
 ?>
 
-<!-- AJAX and SweetAlert -->
+<!-- JavaScript for Status Change, Search, CSV and PDF Export -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    // Handle status change
-    $('.change-status').click(function() {
-        var bookingID = $(this).data('id');
-        var action = $(this).data('action');
+    $(document).ready(function() {
+        // Handle status change
+        $('.change-status').click(function() {
+            var bookingID = $(this).data('id');
+            var action = $(this).data('action');
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Change status to " + action + "?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, change it!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: 'update_booking_action.php',
-                    method: 'POST',
-                    data: { bookingID: bookingID, action: action },
-                    success: function(response) {
-                        var res = JSON.parse(response);
-                        if (res.status === 'success') {
-                            let actionMessage;
-                            switch(action) {
-                                case 'ongoing':
-                                    actionMessage = 'Tour started';
-                                    break;
-                                case 'Pending':
-                                    actionMessage = 'Tour ended';
-                                    break;
-                                case 'rejected':
-                                    actionMessage = 'Tour rejected';
-                                    break;
-                                default:
-                                    actionMessage = 'Status updated';
-                            }                            Swal.fire({
-                                title: 'Success!',
-                                text: actionMessage,
-                                icon: 'success',
-                            }).then(() => {
-                                // Reload the page to reflect the changes
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: res.message,
-                                icon: 'error',
-                            });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Change status to " + action + "?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, change it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: 'update_booking_action.php',
+                        method: 'POST',
+                        data: {
+                            bookingID: bookingID,
+                            action: action
+                        },
+                        success: function(response) {
+                            var res = JSON.parse(response);
+                            if (res.status === 'success') {
+                                Swal.fire('Updated!', 'The status has been updated.', 'success').then(function() {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error!', res.message, 'error');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('AJAX error: ' + error);
                         }
-                    }
-                });
+                    });
+                }
+            });
+        });
+
+        // Dynamic search function
+        $("#searchInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#bookingsTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
+        // Export to CSV
+        $("#exportCsv").click(function() {
+            var csv = [];
+            var rows = document.querySelectorAll("#bookingsTable tr");
+            for (var i = 0; i < rows.length; i++) {
+                var row = [],
+                    cols = rows[i].querySelectorAll("td, th");
+                for (var j = 0; j < cols.length; j++) {
+                    row.push(cols[j].innerText);
+                }
+                csv.push(row.join(","));
             }
+            var csvFile = new Blob([csv.join("\n")], {
+                type: "text/csv"
+            });
+            var downloadLink = document.createElement("a");
+            downloadLink.download = "bookings.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.click();
+        });
+
+        // Export to PDF
+        $("#exportPdf").click(function() {
+            var {
+                jsPDF
+            } = window.jspdf;
+            var doc = new jsPDF();
+            doc.text("Booking Details", 20, 10);
+            doc.autoTable({
+                html: '#bookingsTable'
+            });
+            doc.save('bookings.pdf');
         });
     });
-
-    // Handle send email
-    $('.send-email').click(function() {
-        var bookingID = $(this).data('id');
-        var clientEmail = $(this).data('email');
-
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Send an email to " + clientEmail + "?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, send it!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: 'send_email.php',
-                    method: 'POST',
-                    data: { bookingID: bookingID, clientEmail: clientEmail },
-                    success: function(response) {
-                        var res = JSON.parse(response);
-                        if (res.status === 'success') {
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Email sent successfully.',
-                                icon: 'success',
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: res.message,
-                                icon: 'error',
-                            });
-                        }
-                    }
-                });
-            }
-        });
-    });
-});
 </script>

@@ -58,14 +58,14 @@ $conn->close();
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th style="background-color: #32012F;  font-size: 12px;">TourID</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Tour Name</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Number of Days</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Number of Users</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Price</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Description</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Date</th>
-                            <th style="background-color: #32012F; font-size: 12px;">Action</th>
+                            <th style="background-color: #32012F;  font-size: 12px; color:white;">TourID</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;" >Tour Name</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;">Number of Days</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;">Number of Users</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;">Price</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;">Description</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;">Date</th>
+                            <th style="background-color: #32012F; font-size: 12px;  color:white;">Action</th>
                         </tr>
                     </thead>
                     <tbody>

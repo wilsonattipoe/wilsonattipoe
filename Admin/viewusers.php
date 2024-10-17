@@ -1,4 +1,3 @@
-
 <body>
     <?php
     include('include/header.php');
@@ -34,79 +33,70 @@
             </div>
         </div>
 
-      <!-- Table -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Tour General Table</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Client Name</th>
-                        <th>Email</th>
-                        <th>Location</th>
-                        <th>Phone Number</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="bookingTableBody">
-                    <!-- Data will be inserted here-->
-                </tbody>
-            </table>
+        <!-- Table -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Tour General Table</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody">
+                            <!-- Data will be inserted here-->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
 
-    <?php
-    include('include/footer.php');
-    include('include/script.php');
-    ?>
+        <?php
+        include('include/footer.php');
+        include('include/script.php');
+        ?>
 
-<script>
-    $(document).ready(function() {
-    // Fetch data from the server
-    $.ajax({
-        url: 'fetch_tour_customers.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            if (Array.isArray(data)) {
-                var rows = '';
-                data.forEach(function(booking) {
-                    rows += '<tr>' +
-                        '<td>' + booking.customerName + '</td>' +
-                        '<td>' + booking.customerEmail + '</td>' +
-                        '<td>' + booking.customerLocation + '</td>' +
-                        '<td>' + booking.customerContact + '</td>' +
-                        '<td>$' + booking.amount + '</td>' +
-                        '<td>' + booking.status + '</td>' +
-                        '<td>' + new Date(booking.bookingDate).toLocaleDateString() + '</td>' +
-                        '</tr>';
+        <script>
+            $(document).ready(function() {
+                // Fetch data from the server
+                $.ajax({
+                    url: 'fetch_tour_customers.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        if (Array.isArray(data)) {
+                            var rows = '';
+                            data.forEach(function(booking) {
+                                rows += '<tr>' +
+                                    '<td>' + booking.FullName + '</td>' +
+                                    '<td>' + booking.Email + '</td>' +
+                                    '<td>' + booking.contact + '</td>' +
+                                    '<td>' + booking.location + '</td>';
+                            });
+                            $('#bookingTableBody').html(rows);
+                            $('#dataTable').DataTable(); // Initialize DataTables
+                        } else {
+                            console.error('Unexpected data format:', data);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
                 });
-                $('#bookingTableBody').html(rows);
-                $('#dataTable').DataTable(); // Initialize DataTables
-            } else {
-                console.error('Unexpected data format:', data);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-        }
-    });
 
-    // Search functionality
-    $('#searchInput').on('keyup', function() {
-        var value = $(this).val().toLowerCase();
-        $('#bookingTableBody tr').filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
-    });
-    }
-);
-
-</script>
+                // Search functionality
+                $('#searchInput').on('keyup', function() {
+                    var value = $(this).val().toLowerCase();
+                    $('#bookingTableBody tr').filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                    });
+                });
+            });
+        </script>

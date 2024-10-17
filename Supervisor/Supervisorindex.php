@@ -29,7 +29,8 @@ if (isset($_SESSION['AdminUserID'], $_SESSION['RoleID'], $_SESSION['Username'], 
         );
 
                     // Query to get total price
-            $sql = "SELECT SUM(price) AS total_price FROM booktours";
+            $sql = "SELECT sum(bookPrice) as total_price FROM `booktours` B
+                            join tours T on B.tour_id = T.TourID";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {

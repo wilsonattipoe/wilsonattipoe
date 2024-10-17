@@ -48,6 +48,8 @@ include("./include/header.php");
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                 <div id="map" class="leafconst-map position-relative rounded w-100 h-100" style="min-height: 300px;"></div>
             </div>
+
+
             <div class="col-lg-4 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
                 <form>
                     <div class="row g-3">
@@ -85,6 +87,47 @@ include("./include/header.php");
     </div>
 </div>
 <!-- Contact End -->
+
+
+
+
+<!-- Include jQuery and SweetAlert -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).ready(function() {
+    $('form').on('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        var formData = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            subject: $('#subject').val(),
+            message: $('#message').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: 'send_email.php',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 'success') {
+                    Swal.fire('Success!', response.message, 'success');
+                } else {
+                    Swal.fire('Error!', response.message, 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('Error!', 'There was an error sending your message.', 'error');
+            }
+        });
+    });
+});
+</script>
+
+
 
 <?php
 include("./scripts/scriptsLinks.php");

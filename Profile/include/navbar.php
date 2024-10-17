@@ -145,10 +145,10 @@ $result = $stmt->get_result();
         </li>
         <!-- Nav Item - Cart -->
         <li class="nav-item dropdown no-arrow mx-1">
-            <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-toggle="modal" data-target="#cartModal" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-toggle="modal" data-target="#caal" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-shopping-cart fa-fw"></i>
           <!-- Cart Badge -->
-            <span class="badge badge-danger badge-counter"><?php echo $cartCount; ?></span>
+            <!-- <span class="badge badge-danger badge-counter"><?php echo $cartCount; ?></span> -->
             </a>
         </li>
 

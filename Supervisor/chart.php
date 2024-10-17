@@ -5,18 +5,19 @@ include('../Supervisor/Database/connect.php');
 
 $sql = "
     SELECT 
-        MONTHNAME(Dated) as month, 
-        WEEK(Dated) as week, 
+        MONTHNAME(B.Dated) as month, 
+        WEEK(B.Dated) as week, 
         COUNT(bookTour_ID) as totalBookings, 
-        SUM(price) as totalAmount
+        SUM(bookPrice) as totalAmount
     FROM 
-        booktours
+        booktours B
+    join tours T on B.tour_id = T.TourID
     WHERE 
-        YEAR(Dated) = YEAR(CURDATE())  -- Filter for the current year
+        YEAR(B.Dated) = YEAR(CURDATE())  -- Filter for the current year
     GROUP BY 
-        MONTH(Dated), WEEK(Dated)
+        MONTH(B.Dated), WEEK(B.Dated)
     ORDER BY 
-        MONTH(Dated), WEEK(Dated)
+        MONTH(B.Dated), WEEK(B.Dated)
 ";
 $result = $conn->query($sql);
 

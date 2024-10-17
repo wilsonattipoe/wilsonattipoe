@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $_POST['id'];
         $userID = $_POST['userID'];
 
-        $insertQuery = "INSERT INTO `bookTours`(`tour_id`, `ClientUserID`) VALUES (?, ?)";
+        $insertQuery = "INSERT INTO `bookTours`( `ClientUserID`, `room_id`, `participants`, `tour_id`) VALUES (?, ?,?,?)";
         $stmt = $conn->prepare($insertQuery);
         $stmt->bind_param("ss", $id, $userID);
 

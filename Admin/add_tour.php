@@ -22,6 +22,9 @@ $tourDescription = $_POST['tourDescription'];
 $tourDuration = $_POST['tourDuration'];
 $tourSite = $_POST['tourSite'];
 $Tourstat = $_POST['tourstat'];
+$TourType = $_POST['tourtype'];
+$Start_date = $_POST['start_date'];
+$End_date = $_POST['end_date'];
 
 // Handle file upload
 $tourImage = $_FILES['tourImage']['name'];
@@ -33,10 +36,10 @@ $response = array();
 
 if (move_uploaded_file($tourImageTmp, $uploadFile)) {
     // Prepare and execute the SQL statement to insert the tour
-    $stmt = $conn->prepare("INSERT INTO tours (TourName, tourdescription, Price, tourimages, numberperson, AdminUserID, TourDuration, tour_site_id, tourStat_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO `tours`(`TourName`, `tourdescription`, `Price`, `tourimages`, `numberperson`, `TourDuration`, `AdminUserID`, `tourStat_id`, `tour_site_id`, `tourtype_id`, `start_date`, `end_date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     // Bind parameters
-    $stmt->bind_param("ssdssssis", $tourName, $tourDescription, $tourPrice, $tourImage, $tourPersons, $adminusers, $tourDuration, $tourSite, $Tourstat);
+    $stmt->bind_param("ssdssssissss", $tourName, $tourDescription, $tourPrice, $tourImage, $tourPersons,  $tourDuration, $adminusers, $Tourstat, $tourSite, $TourType, $Start_date, $End_date);
 
     if ($stmt->execute()) {
         $response['success'] = true;
@@ -44,29 +47,16 @@ if (move_uploaded_file($tourImageTmp, $uploadFile)) {
 
         // Log the activity
         $action = "Added new tour: " . $tourName;
-        $ipAddress = $_SERVER['REMOTE_ADDR']; // Get the IP address
-
-        // Prepare and execute the SQL statement to insert the log
-        $logStmt = $conn->prepare("INSERT INTO activitylogs (clientusers, adminusers, action, action_time, ip_address, details) VALUES (NULL, ?, ?, NOW(), ?, ?)");
-        $logStmt->bind_param("ssss", $adminusers, $action, $ipAddress, $tourName);
-
-        $logStmt->execute();
-        $logStmt->close();
-
+        $stmt = $conn->prepare("INSERT INTO audit_logs (AdminUserID, action, created_at) VALUES (?, ?, NOW())");
+        $stmt->bind_param("is", $adminusers, $action);
+        $stmt->execute();
     } else {
         $response['success'] = false;
-        $response['message'] = "Failed to add new tour: " . $stmt->error;
+        $response['message'] = "Failed to add new tour.";
     }
-
-    $stmt->close();
 } else {
     $response['success'] = false;
     $response['message'] = "Failed to upload image.";
 }
 
-$conn->close();
-
-// Send JSON response
-header('Content-Type: application/json');
 echo json_encode($response);
-?>

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 18, 2024 at 08:29 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Oct 15, 2024 at 05:49 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -38,8 +38,8 @@ CREATE TABLE `actions` (
 
 INSERT INTO `actions` (`ActionID`, `ActionName`) VALUES
 (1, 'Pending'),
-(2, 'Rejected'),
-(3, 'Ongoing');
+(2, 'Ongoing'),
+(3, 'Rejected');
 
 -- --------------------------------------------------------
 
@@ -73,6 +73,7 @@ INSERT INTO `activitylogs` (`logs_id`, `clientusers`, `adminusers`, `action`, `a
 
 CREATE TABLE `addcart` (
   `cart_id` int(11) NOT NULL,
+  `tourID` int(11) DEFAULT NULL,
   `ClientUserID` int(11) DEFAULT NULL,
   `dateCreated` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -81,13 +82,9 @@ CREATE TABLE `addcart` (
 -- Dumping data for table `addcart`
 --
 
-INSERT INTO `addcart` (`cart_id`, `ClientUserID`, `dateCreated`) VALUES
-(3, 4, '2024-08-29 09:27:30'),
-(4, 4, '2024-08-29 09:30:53'),
-(5, 4, '2024-08-29 09:31:22'),
-(6, 4, '2024-08-29 09:31:41'),
-(7, 4, '2024-08-29 09:32:10'),
-(8, 4, '2024-08-29 09:47:24');
+INSERT INTO `addcart` (`cart_id`, `tourID`, `ClientUserID`, `dateCreated`) VALUES
+(1, 4, 1, '2024-10-13 12:46:28'),
+(2, 6, 1, '2024-10-13 12:47:48');
 
 -- --------------------------------------------------------
 
@@ -154,17 +151,22 @@ INSERT INTO `adminusers` (`AdminUserID`, `RoleID`, `statusID`, `Username`, `Pass
 
 CREATE TABLE `booktours` (
   `bookTour_ID` int(11) NOT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
   `ClientUserID` int(11) DEFAULT NULL,
-  `room_id` int(11) DEFAULT NULL,
   `participants` int(11) DEFAULT NULL,
+  `tour_id` int(11) DEFAULT NULL,
   `action_id` int(11) DEFAULT NULL,
-  `country_id` int(11) DEFAULT NULL,
-  `tourType_id` int(11) DEFAULT NULL,
-  `tourSite_id` int(11) DEFAULT NULL,
-  `Dated` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('Cancelled','Pending','Ongoing') DEFAULT NULL
+  `bookPrice` decimal(10,2) DEFAULT NULL,
+  `Dated` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `booktours`
+--
+
+INSERT INTO `booktours` (`bookTour_ID`, `ClientUserID`, `participants`, `tour_id`, `action_id`, `bookPrice`, `Dated`) VALUES
+(1, 1, 20, 0, 1, 200.00, '2024-10-13 12:46:12'),
+(2, 1, 4, 4, 2, 800.00, '2024-10-13 12:46:47'),
+(3, 1, 15, 6, 2, 30000.00, '2024-10-13 12:48:08');
 
 -- --------------------------------------------------------
 
@@ -269,7 +271,8 @@ CREATE TABLE `email` (
 INSERT INTO `email` (`email_id`, `email_text`, `FullName`) VALUES
 (1, 'dsfasdgsdgsd', 'bb'),
 (2, 'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww', 'Mr. Walter'),
-(3, 'The PHP script receives the form data and saves the message to the database.\nIt then sends an email to the system administrator with the details of the message.\nErrors are handled and reported if any issue occurs during the process.', 'Dev');
+(3, 'The PHP script receives the form data and saves the message to the database.\nIt then sends an email to the system administrator with the details of the message.\nErrors are handled and reported if any issue occurs during the process.', 'Dev'),
+(4, 'To get a verification code, first confirm the phone number you', 'John');
 
 -- --------------------------------------------------------
 
@@ -494,64 +497,20 @@ CREATE TABLE `tours` (
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `AdminUserID` int(11) DEFAULT NULL,
   `tourStat_id` int(11) DEFAULT NULL,
-  `tour_site_id` int(11) DEFAULT NULL
+  `tour_site_id` int(11) DEFAULT NULL,
+  `tourtype_id` int(11) DEFAULT NULL,
+  `start_date` varchar(50) DEFAULT NULL,
+  `end_date` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tours`
 --
 
-INSERT INTO `tours` (`TourID`, `TourName`, `tourdescription`, `Price`, `tourimages`, `numberperson`, `TourDuration`, `date`, `AdminUserID`, `tourStat_id`, `tour_site_id`) VALUES
-(4, 'Religious Tour', 'Trafalgar religious tours connect you with spiritual destinations. Experience the holy lands in Jordan and Israel or see the spiritual icons of Europe.', 200.00, 0x72656c692e6a7067, 20, 50, '2024-08-29 16:42:16', 3, 1, 3),
-(5, 'Educaitonal ', 'An educational tour places the students in different socio-cultural environments where they encounter new people and witness regional practices. ', 1000.00, 0x6564752e77656270, 100, 2, '2024-08-24 21:08:05', 3, 1, 3),
-(6, 'Group Tour ', 'Our group tours offer excitement, camaraderie, and unforgettable memories. Join us for a journey like no other and discover the world\'s wonders together.', 2000.00, 0x67726f757020746f75722e6a7067, 20, 2, '2024-08-24 23:27:10', 3, 1, 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tourservices`
---
-
-CREATE TABLE `tourservices` (
-  `tourservices_id` int(11) NOT NULL,
-  `tourname` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `numberperson` int(11) DEFAULT NULL,
-  `Price` decimal(10,2) DEFAULT NULL,
-  `TourDuration` int(11) DEFAULT NULL,
-  `tourimages` blob DEFAULT NULL,
-  `create_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `adminusers` int(11) DEFAULT NULL,
-  `tourtypes` int(11) DEFAULT NULL,
-  `tourstatus` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tourservices`
---
-
-INSERT INTO `tourservices` (`tourservices_id`, `tourname`, `description`, `numberperson`, `Price`, `TourDuration`, `tourimages`, `create_at`, `adminusers`, `tourtypes`, `tourstatus`) VALUES
-(1, 'Culinary', 'Discover the rich and tasty cuisines of Japan with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 12, 3000.00, 20, 0x63756c696e6172792e6a7067, '2024-08-24 19:25:39', 3, 7, 1),
-(2, 'Culinary', 'Discover the rich and tasty cuisines of Japan with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 12, 3000.00, 20, 0x63756c692e6a7067, '2024-08-24 19:25:48', 3, 7, 1),
-(3, 'Culinary', 'Discover the rich and tasty cuisines of France with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 12, 4000.00, 5, 0x63756c692e6a7067, '2024-08-24 19:26:12', 3, 7, 1),
-(4, 'Culinary', 'Discover the rich and tasty cuisines of France with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 12, 4000.00, 5, 0x6369747920746f75722e6a706567, '2024-08-24 19:27:30', 3, 1, 1),
-(5, 'Inter City Tours', 'Discover the rich and tasty cuisines of France with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 6, 1000.00, 5, 0x6369747920746f75722e6a706567, '2024-08-24 19:31:02', 3, 1, 1),
-(6, 'Adventure Tour', 'Adventure is full of Discovering  the rich and tasty cuisines of France with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 18, 1000.00, 5, 0x616476616e74757265746f75722e6a7067, '2024-08-24 19:33:44', 3, 10, 1),
-(7, 'Adventure Tour part 2', 'Adventure part 2 is full of Discovering  the rich and tasty cuisines of France with a local guide. Our tour includes tastings of iconic street foods, offering you an authentic taste of Italy', 14, 4000.00, 5, 0x616476616e74757265746f75722e6a7067, '2024-08-24 19:35:46', 3, 10, 1),
-(8, 'Educational Tour part 1', 'An educational tour places the students in different socio-cultural environments where they encounter new people and witness regional practices. These interactions teach them to accept diversity. Thus, enhancing their communication skills, sense of teamwo', 100, 4000.00, 1, 0x656475636174696f6e616c20746f75722e6a7067, '2024-08-24 19:38:00', 3, 9, 1),
-(9, 'Educational Tour part 2', 'An educational tour places the students in different socio-cultural environments where they encounter new people and witness regional practices. These interactions teach them to accept diversity. Thus, enhancing their communication skills, sense of teamwo', 30, 3500.00, 2, 0x6564752e77656270, '2024-08-24 19:39:12', 3, 9, 1),
-(10, 'Religious Tour', 'Trafalgar religious tours connect you with spiritual destinations. Experience the holy lands in Jordan and Israel or see the spiritual icons of Europe.Take a faith based journey to renew your faith, reaffirm your beliefs, and witness the sites of religiou', 5, 3500.00, 20, 0x72656c6967696f7573746f75722e6a7067, '2024-08-24 19:43:30', 3, 8, 1),
-(11, 'Religious Tour part 2', 'Trafalgar religious tours connect you with spiritual destinations. Experience the holy lands in Jordan and Israel or see the spiritual icons of Europe.Take a faith based journey to renew your faith, reaffirm your beliefs, and witness the sites of religiou', 50, 3500.00, 2, 0x72656c6967696f7573746f75722e6a7067, '2024-08-24 19:44:10', 3, 8, 1),
-(12, 'Religious Tour part 3', 'Trafalgar religious tours connect you with spiritual destinations. Experience the holy lands in Jordan and Israel or see the spiritual icons of Europe.Take a faith based journey to renew your faith, reaffirm your beliefs, and witness the sites of religiou', 60, 3500.00, 20, 0x72656c692e6a7067, '2024-08-24 19:45:39', 3, 8, 1),
-(13, 'Religious Tour part 3', 'As the leader in small group adventure travel for 30+ years, we\'ve redefined the way travellers see the world. Check out how we\'re creating the future of travel', 60, 3500.00, 20, 0x67726f757020746f75722e6a7067, '2024-08-24 19:48:28', 3, 2, 1),
-(14, 'Group Tour part 2', 'As the leader in small group adventure travel for 30+ years, we\'ve redefined the way travellers see the world. Check out how we\'re creating the future of travel', 60, 3500.00, 20, 0x67722e6a7067, '2024-08-24 19:49:24', 3, 2, 1),
-(15, 'Safari Tour part 2', 'Welcome to Safaritours! Discover what sustainability in travel is all about. Our sister site, Galapagos.com, focuses on Latin America, where Charles', 20, 3500.00, 10, 0x73612e6a7067, '2024-08-24 19:52:07', 3, 6, 1),
-(16, 'Safari Tour part 1', 'Welcome to Safaritours! Discover what sustainability in travel is all about. Our sister site, Galapagos.com, focuses on Latin America, where Charles', 5, 1500.00, 10, 0x7361666172692e6a7067, '2024-08-24 19:52:26', 3, 6, 1),
-(17, 'Festival VVIP', 'From the capital Accra we head to Winneba to the Aboakyer festival, a vibrant celebration of local traditions held each year. We continue to the historic Celebrate Ghana & experience a fall harvest festival in October 2024! Join Expat Life Tours', 5, 2000.00, 2, 0x666573746976616c2e6a7067, '2024-08-24 19:57:00', 3, 5, 1),
-(18, 'Festival part 2', 'From the capital Accra we head to Winneba to the Aboakyer festival, a vibrant celebration of local traditions held each year. We continue to the historic Celebrate Ghana & experience a fall harvest festival in October 2024! Join Expat Life Tours', 5, 1500.00, 5, 0x6665742e6a7067, '2024-08-24 19:58:20', 3, 5, 1),
-(19, 'Festival part 3', 'What is the festive season? Festive season is an informal name for the period leading up to and including the holidays of Christmas, Hanukkah, Kwanzaa, New Year\'s Eve, and New Year\'s Day.', 4, 3500.00, 4, 0x666573746976616c2e6a7067, '2024-08-25 05:56:33', 3, 5, 1),
-(20, 'dsdfsdfdfdfs', 'bgggggggggggbgggggggggggbgggggggggggbgggggggggggbgggggggggggbggggggggggg', 4, 4500.00, 3, 0x6372656174655f6576656e745f2d5f64617368626f6172645f76322e706e67, '2024-08-28 03:54:22', 3, 9, 2),
-(21, 'wahooservices', 'ddddddddddddddddddddd', 3, 1200.00, 3, 0x6372656174655f6576656e745f2d5f64617368626f6172645f76322e706e67, '2024-08-29 16:25:21', 3, 9, 1);
+INSERT INTO `tours` (`TourID`, `TourName`, `tourdescription`, `Price`, `tourimages`, `numberperson`, `TourDuration`, `date`, `AdminUserID`, `tourStat_id`, `tour_site_id`, `tourtype_id`, `start_date`, `end_date`) VALUES
+(4, 'Religious Tour', 'Trafalgar religious tours connect you with spiritual destinations. Experience the holy lands in Jordan and Israel or see the spiritual icons of Europe.', 200.00, 0x72656c692e6a7067, 20, 50, '2024-10-10 13:16:40', 3, 1, 3, 10, '2024-10-15', '2024-10-20'),
+(5, 'Educaitonal ', 'An educational tour places the students in different socio-cultural environments where they encounter new people and witness regional practices. ', 1000.00, 0x6564752e77656270, 100, 2, '2024-10-10 13:17:16', 3, 1, 3, 10, '2024-11-01', '	2024-11-07'),
+(6, 'Group Tour ', 'Our group tours offer excitement, camaraderie, and unforgettable memories. Join us for a journey like no other and discover the world\'s wonders together.', 2000.00, 0x67726f757020746f75722e6a7067, 20, 2, '2024-10-10 13:18:21', 3, 1, 2, 10, '2024-12-05', '2024-12-12');
 
 -- --------------------------------------------------------
 
@@ -569,9 +528,9 @@ CREATE TABLE `tourstatus` (
 --
 
 INSERT INTO `tourstatus` (`tourstat_id`, `tourStatus`) VALUES
-(1, 'onging'),
-(2, 'pending'),
-(3, 'ended');
+(1, 'ongoing'),
+(2, 'special'),
+(3, 'old');
 
 -- --------------------------------------------------------
 
@@ -695,12 +654,7 @@ ALTER TABLE `adminusers`
 --
 ALTER TABLE `booktours`
   ADD PRIMARY KEY (`bookTour_ID`),
-  ADD KEY `ClientUserID` (`ClientUserID`),
-  ADD KEY `room_id` (`room_id`),
-  ADD KEY `action_id` (`action_id`),
-  ADD KEY `country_id` (`country_id`),
-  ADD KEY `tourType_id` (`tourType_id`),
-  ADD KEY `tourSite_id` (`tourSite_id`);
+  ADD KEY `ClientUserID` (`ClientUserID`);
 
 --
 -- Indexes for table `clientusers`
@@ -791,15 +745,6 @@ ALTER TABLE `tours`
   ADD KEY `fk_tour_site_id` (`tour_site_id`);
 
 --
--- Indexes for table `tourservices`
---
-ALTER TABLE `tourservices`
-  ADD PRIMARY KEY (`tourservices_id`),
-  ADD KEY `tourstatus` (`tourstatus`),
-  ADD KEY `tourtypes` (`tourtypes`),
-  ADD KEY `adminusers` (`adminusers`);
-
---
 -- Indexes for table `tourstatus`
 --
 ALTER TABLE `tourstatus`
@@ -846,7 +791,7 @@ ALTER TABLE `activitylogs`
 -- AUTO_INCREMENT for table `addcart`
 --
 ALTER TABLE `addcart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `adminstatus`
@@ -864,7 +809,7 @@ ALTER TABLE `adminusers`
 -- AUTO_INCREMENT for table `booktours`
 --
 ALTER TABLE `booktours`
-  MODIFY `bookTour_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `bookTour_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `clientusers`
@@ -888,7 +833,7 @@ ALTER TABLE `countryamount`
 -- AUTO_INCREMENT for table `email`
 --
 ALTER TABLE `email`
-  MODIFY `email_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `email_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `feedback`
@@ -937,12 +882,6 @@ ALTER TABLE `tourist_sites`
 --
 ALTER TABLE `tours`
   MODIFY `TourID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `tourservices`
---
-ALTER TABLE `tourservices`
-  MODIFY `tourservices_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `tourstatus`
@@ -994,17 +933,6 @@ ALTER TABLE `adminusers`
   ADD CONSTRAINT `adminusers_ibfk_2` FOREIGN KEY (`statusID`) REFERENCES `adminstatus` (`statusID`);
 
 --
--- Constraints for table `booktours`
---
-ALTER TABLE `booktours`
-  ADD CONSTRAINT `booktours_ibfk_1` FOREIGN KEY (`ClientUserID`) REFERENCES `clientusers` (`ClientUserID`),
-  ADD CONSTRAINT `booktours_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `room` (`Room_id`),
-  ADD CONSTRAINT `booktours_ibfk_3` FOREIGN KEY (`action_id`) REFERENCES `actions` (`ActionID`),
-  ADD CONSTRAINT `booktours_ibfk_4` FOREIGN KEY (`country_id`) REFERENCES `countries` (`country_id`),
-  ADD CONSTRAINT `booktours_ibfk_5` FOREIGN KEY (`tourType_id`) REFERENCES `tourtypes` (`TourTypeID`),
-  ADD CONSTRAINT `booktours_ibfk_6` FOREIGN KEY (`tourSite_id`) REFERENCES `tourist_sites` (`site_id`);
-
---
 -- Constraints for table `clientusers`
 --
 ALTER TABLE `clientusers`
@@ -1017,61 +945,10 @@ ALTER TABLE `countries`
   ADD CONSTRAINT `fk_countryamount_id` FOREIGN KEY (`countryamount_id`) REFERENCES `countryamount` (`country_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `feedback`
---
-ALTER TABLE `feedback`
-  ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`ClientUserID`) REFERENCES `clientusers` (`ClientUserID`),
-  ADD CONSTRAINT `fk_booking` FOREIGN KEY (`booking_id`) REFERENCES `booktours` (`bookTour_ID`);
-
---
 -- Constraints for table `passwordreset`
 --
 ALTER TABLE `passwordreset`
   ADD CONSTRAINT `passwordreset_ibfk_1` FOREIGN KEY (`ClientUserID`) REFERENCES `clientusers` (`ClientUserID`);
-
---
--- Constraints for table `request`
---
-ALTER TABLE `request`
-  ADD CONSTRAINT `fk_ActionID` FOREIGN KEY (`ActionID`) REFERENCES `actions` (`ActionID`),
-  ADD CONSTRAINT `fk_ClientUserID` FOREIGN KEY (`ClientUserID`) REFERENCES `clientusers` (`ClientUserID`),
-  ADD CONSTRAINT `fk_verify` FOREIGN KEY (`verify_id`) REFERENCES `verify` (`verify_id`);
-
---
--- Constraints for table `room`
---
-ALTER TABLE `room`
-  ADD CONSTRAINT `adminusers` FOREIGN KEY (`adminusers`) REFERENCES `adminusers` (`AdminUserID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `room_ibfk_2` FOREIGN KEY (`adminusers`) REFERENCES `adminusers` (`AdminUserID`),
-  ADD CONSTRAINT `room_ibfk_3` FOREIGN KEY (`roomamount`) REFERENCES `roomamount` (`Amount_id`);
-
---
--- Constraints for table `tourist_sites`
---
-ALTER TABLE `tourist_sites`
-  ADD CONSTRAINT `tourist_sites_ibfk_1` FOREIGN KEY (`country_id`) REFERENCES `countries` (`country_id`);
-
---
--- Constraints for table `tours`
---
-ALTER TABLE `tours`
-  ADD CONSTRAINT `fk_adminuser` FOREIGN KEY (`AdminUserID`) REFERENCES `adminusers` (`AdminUserID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_tour_site_id` FOREIGN KEY (`tour_site_id`) REFERENCES `tourist_sites` (`site_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `tourservices`
---
-ALTER TABLE `tourservices`
-  ADD CONSTRAINT `tourservices_ibfk_1` FOREIGN KEY (`tourstatus`) REFERENCES `tourstatus` (`tourstat_id`),
-  ADD CONSTRAINT `tourservices_ibfk_2` FOREIGN KEY (`tourtypes`) REFERENCES `tourtypes` (`TourTypeID`),
-  ADD CONSTRAINT `tourservices_ibfk_3` FOREIGN KEY (`adminusers`) REFERENCES `adminusers` (`AdminUserID`);
-
---
--- Constraints for table `whitelist`
---
-ALTER TABLE `whitelist`
-  ADD CONSTRAINT `fk_clientusers` FOREIGN KEY (`clientusers`) REFERENCES `clientusers` (`ClientUserID`),
-  ADD CONSTRAINT `fk_roleID` FOREIGN KEY (`roleID`) REFERENCES `roles` (`RoleID`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

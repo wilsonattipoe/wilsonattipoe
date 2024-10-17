@@ -1,64 +1,72 @@
 <?php
 include("./Database/connect.php");
 
+// Prepare default response
 $response = [
-    'status' => 'ok',
+    'status' => 'error',
     'success' => false,
-    'message' => '',
+    'message' => 'Unknown error occurred',
 ];
 
+// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if userID is set
-    if (isset($_POST['userID'])) {
+
+    // Validate required parameters
+    if (isset($_POST['userID']) && isset($_POST['id'])) {
         $userID = $_POST['userID'];
+        $tourID = $_POST['id']; // Assuming 'id' refers to 'tour_ID'
 
-        // Prepare the SQL statement
-        $insertQuery = "INSERT INTO `AddCart`(`ClientUserID`) VALUES (?)";
-        $stmt = $conn->prepare($insertQuery);
+        // Check if the tour is already in the user's cart
+        $checkQuery = "SELECT * FROM `AddCart` WHERE `tourID` = ? AND `ClientUserID` = ?";
+        $checkStmt = $conn->prepare($checkQuery);
 
-        if ($stmt === false) {
-            $response = [
-                'status' => 'error',
-                'success' => false,
-                'message' => 'Failed to prepare the statement: ' . $conn->error,
-            ];
+        if ($checkStmt === false) {
+            $response['message'] = 'Failed to prepare check statement: ' . $conn->error;
         } else {
-            $stmt->bind_param("s", $userID);
+            $checkStmt->bind_param("ss", $tourID, $userID);
+            $checkStmt->execute();
+            $checkResult = $checkStmt->get_result();
 
-            if ($stmt->execute()) {
-                $response = [
-                    'status' => 'ok',
-                    'success' => true,
-                    'message' => 'Added to cart successfully',
-                    'redirect' => './Booking.php'
-                ];
+            if ($checkResult->num_rows > 0) {
+                // The tour is already in the cart
+                $response['message'] = 'This tour is already in your cart.';
             } else {
-                $response = [
-                    'status' => 'error',
-                    'success' => false,
-                    'message' => 'Failed to add to cart: ' . $stmt->error,
-                ];
+                // Proceed to add the tour to the cart
+                $insertQuery = "INSERT INTO `AddCart`(`tourID`, `ClientUserID`) VALUES (?, ?)";
+                $insertStmt = $conn->prepare($insertQuery);
+
+                if ($insertStmt === false) {
+                    $response['message'] = 'Failed to prepare insert statement: ' . $conn->error;
+                } else {
+                    $insertStmt->bind_param("ss", $tourID, $userID);
+
+                    if ($insertStmt->execute()) {
+                        // Success response
+                        $response = [
+                            'status' => 'ok',
+                            'success' => true,
+                            'message' => 'Added to cart successfully',
+                            'redirect' => './Booking.php', // Optional redirect URL
+                        ];
+                    } else {
+                        $response['message'] = 'Failed to add to cart: ' . $insertStmt->error;
+                    }
+
+                    $insertStmt->close();
+                }
             }
 
-            $stmt->close();
+            $checkStmt->close();
         }
     } else {
-        $response = [
-            'status' => 'error',
-            'success' => false,
-            'message' => 'Invalid request: missing parameters',
-        ];
+        $response['message'] = 'Invalid request: missing parameters';
     }
 } else {
-    $response = [
-        'status' => 'error',
-        'success' => false,
-        'message' => 'Invalid request method',
-    ];
+    $response['message'] = 'Invalid request method';
 }
 
+// Close the database connection
 mysqli_close($conn);
 
-// Send the JSON response
+// Send the response as JSON
 echo json_encode($response);
-?>

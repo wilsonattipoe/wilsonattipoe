@@ -1,10 +1,7 @@
-
-
 <style>
   .bg-gradient-32012F {
     background-color: #071952;
   }
-  
 </style>
 
 
@@ -33,7 +30,7 @@
 
   <hr class="sidebar-divider">
 
-  
+
   <!-- Booking Handling -->
   <!-- <li class="nav-item">
     <a class="nav-link collapsed" href="/Profile/index.php" aria-expanded="true" aria-controls="collapseTwo">
@@ -45,15 +42,15 @@
   <!-- Booking Handling -->
   <li class="nav-item">
     <a class="nav-link collapsed" href="/Profile/BookedTour.php" aria-expanded="true" aria-controls="collapseTwo">
-    <i class="fas fa-fw fa-dollar-sign"></i>
+      <i class="fas fa-fw fa-dollar-sign"></i>
       <span>Tours Booked</span>
     </a>
-  </li>
+  </li> 
 
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="/Profile/Booking.php" aria-expanded="true" aria-controls="collapseTwo">
-    <i class="fas fa-fw fa-dollar-sign"></i>
+      <i class="fas fa-fw fa-dollar-sign"></i>
       <span>Booking</span>
     </a>
   </li>
@@ -63,7 +60,7 @@
   <!-- Whitelist Handling -->
   <li class="nav-item">
     <a class="nav-link collapsed" href="/Profile/Whitelist.php" aria-expanded="true" aria-controls="collapseTwo">
-    <i class="fas fa-fw fa-check-circle"></i>
+      <i class="fas fa-fw fa-check-circle"></i>
       <span>Whitelist</span>
     </a>
 
@@ -74,8 +71,23 @@
     <!-- Special request Handling -->
   <li class="nav-item">
     <a class="nav-link collapsed" href="/Profile/SpecialRequest.php" aria-expanded="true" aria-controls="collapseTwo">
-    <i class="fas fa-fw fa-envelope"></i>
+      <i class="fas fa-fw fa-envelope"></i>
       <span>Special Request</span>
+    </a>
+  </li>
+
+  <!-- cart request Handling -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="/Profile/cart.php" aria-expanded="true" aria-controls="collapseTwo">
+      <i class="fas fa-fw fa-envelope"></i>
+      <span>Cart data</span>
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="/Profile/viewBookTour.php" aria-expanded="true" aria-controls="collapseTwo">
+      <i class="fas fa-fw fa-envelope"></i>
+      <span>Booked data</span>
     </a>
   </li>
 
